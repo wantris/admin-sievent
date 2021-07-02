@@ -28,6 +28,8 @@ Route::group(['prefix' => 'dashboard'], function () {
     Route::get('/', 'dashboardController@index')->name('dashboard');
 });
 
+// ======================== admin =====================
+
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/', 'adminController@index')->name('admin.index');
     Route::get('/add', 'adminController@add')->name('admin.add');
@@ -36,6 +38,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::patch('/update/{id}', 'adminController@update')->name('admin.update');
     Route::delete('/delete/{id}', 'adminController@edit')->name('admin.delete');
 });
+
+// ==================== wadir 3 ==============
 
 Route::group(['prefix' => 'wadir3'], function () {
     Route::get('/', 'wadir3Controller@index')->name('wadir3.index');
@@ -46,6 +50,8 @@ Route::group(['prefix' => 'wadir3'], function () {
     Route::delete('/delete/{id}', 'wadir3Controller@edit')->name('wadir3.delete');
 });
 
+// =================== kategori event ============
+
 Route::group(['prefix' => 'kategorievent'], function () {
     Route::get('/', 'kategoriEventController@index')->name('kategorievent.index');
     Route::get('/add', 'kategoriEventController@add')->name('kategorievent.add');
@@ -55,6 +61,8 @@ Route::group(['prefix' => 'kategorievent'], function () {
     Route::delete('/delete/{id_kategori}', 'kategoriEventController@edit')->name('kategorievent.delete');
 });
 
+//  ==================== ormawa ================
+
 Route::group(['prefix' => 'ormawa'], function () {
     Route::get('/', 'ormawaController@index')->name('ormawa.index');
     Route::get('/add', 'ormawaController@add')->name('ormawa.add');
@@ -62,5 +70,72 @@ Route::group(['prefix' => 'ormawa'], function () {
     Route::get('/detail/{id_ormawa}', 'ormawaController@detail')->name('ormawa.detail');
     Route::get('/edit/{id_ormawa}', 'ormawaController@edit')->name('ormawa.edit');
     Route::patch('/update/{id_ormawa}', 'ormawaController@update')->name('ormawa.update');
-    Route::delete('/delete/{id_ormawa}', 'ormawaController@edit')->name('ormawa.delete');
+    Route::delete('/delete/{id_ormawa}', 'ormawaController@delete')->name('ormawa.delete');
+});
+
+// ============ cakupan ormawa ====================
+
+Route::group(['prefix' => 'cakupanormawa'], function () {
+    Route::get('/', 'cakupanOrmawaController@index')->name('cakupanOrmawa.index');
+    Route::get('/add', 'cakupanOrmawaController@add')->name('cakupanOrmawa.add');
+    Route::post('/add', 'cakupanOrmawaController@save')->name('cakupanOrmawa.save');
+    Route::get('/edit/{id_cakupanOrmawa}', 'cakupanOrmawaController@edit')->name('cakupanOrmawa.edit');
+    Route::patch('/update/{id_cakupanOrmawa}', 'cakupanOrmawaController@update')->name('cakupanOrmawa.update');
+    Route::delete('/delete/{id_cakupanOrmawa}', 'cakupanOrmawaController@delete')->name('cakupanOrmawa.delete');
+});
+
+// ============ Tipe Peserta ====================
+
+Route::group(['prefix' => 'tipepeserta'], function () {
+    Route::get('/', 'tipepesertaController@index')->name('tipepeserta.index');
+    Route::get('/add', 'tipepesertaController@add')->name('tipepeserta.add');
+    Route::post('/add', 'tipepesertaController@save')->name('tipepeserta.save');
+    Route::get('/edit/{id_tipepeserta}', 'tipepesertaController@edit')->name('tipepeserta.edit');
+    Route::patch('/update/{id_tipepeserta}', 'tipepesertaController@update')->name('tipepeserta.update');
+    Route::delete('/delete/{id_tipepeserta}', 'tipepesertaController@delete')->name('tipepeserta.delete');
+});
+
+
+// ================ Pembina =====================
+
+Route::group(['prefix' => 'pembina'], function () {
+    Route::get('/', 'pembinaController@index')->name('pembina.index');
+    Route::get('/add', 'pembinaController@add')->name('pembina.add');
+    Route::post('/add', 'pembinaController@save')->name('pembina.save');
+    Route::get('/edit/{id_pembina}', 'pembinaController@edit')->name('pembina.edit');
+    Route::patch('/update/{id_pembina}', 'pembinaController@update')->name('pembina.update');
+    Route::delete('/delete/{id_pembina}', 'pembinaController@delete')->name('pembina.delete');
+});
+
+// ================== participant ===============
+Route::group(['prefix' => 'participant'], function () {
+    Route::get('/', 'participantController@index')->name('participant.index');
+    Route::get('/add', 'participantController@add')->name('participant.add');
+    Route::post('/add', 'participantController@save')->name('participant.save');
+    Route::get('/edit/{id_participant}', 'participantController@edit')->name('participant.edit');
+    Route::patch('/update/{id_participant}', 'participantController@update')->name('participant.update');
+    Route::delete('/delete/{id_participant}', 'participantController@delete')->name('participant.delete');
+});
+
+// ================== mahasiswa ===============
+Route::group(['prefix' => 'mahasiswa'], function () {
+    Route::get('/', 'mahasiswaController@index')->name('mahasiswa.index');
+    Route::get('/add', 'mahasiswaController@runSeeder')->name('mahasiswa.add');
+    Route::post('/add', 'mahasiswaController@save')->name('mahasiswa.save');
+    Route::get('/edit/{nim}', 'mahasiswaController@edit')->name('mahasiswa.edit');
+    Route::patch('/update/{nim}', 'mahasiswaController@update')->name('mahasiswa.update');
+    Route::delete('/delete/{nim}', 'mahasiswaController@delete')->name('mahasiswa.delete');
+});
+
+// ================== eventinternal ===============
+Route::group(['prefix' => 'eventinternal'], function () {
+    Route::get('/', 'eventInternalController@index')->name('eventinternal.index');
+    Route::get('/add', 'eventInternalController@add')->name('eventinternal.add');
+    Route::post('/add', 'eventInternalController@save')->name('eventinternal.save');
+    Route::get('/edit/{id_eventinternal}', 'eventInternalController@edit')->name('eventinternal.edit');
+    Route::patch('/update/{id_eventinternal}', 'eventInternalController@update')->name('eventinternal.update');
+    Route::delete('/delete/{id_eventinternal}', 'eventInternalController@delete')->name('eventinternal.delete');
+
+    Route::get('/pengajuan/{id_eventinternal}', 'eventInternalController@seePengajuan')->name('eventinternal.pengajuan');
+    Route::patch('/pengajuan/{id_eventinternal_detail}', 'eventInternalController@updatePengajuan')->name('eventinternal.pengajuan.update');
 });

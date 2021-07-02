@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    @include('_partials.header')
-    @include('_partials.css_asset')
+  @include('_partials.header')
+  @include('_partials.css_asset')
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <style>
+    .pdfobject-container {
+      height: 30rem;
+      border: 1rem solid rgba(0, 0, 0, .1);
+    }
+  </style>
 </head>
 
 <body>
   <div id="app">
     <div class="main-wrapper">
-     
-        {{-- navbar --}}
-        @include('_partials.navbar')
 
-        {{-- sidebar --}}
-        @include('_partials.sidebar')
+      {{-- navbar --}}
+      @include('_partials.navbar')
+
+      {{-- sidebar --}}
+      @include('_partials.sidebar')
 
       <!-- Main Content -->
       <div class="main-content">
@@ -21,11 +29,11 @@
           <div class="section-header">
             <h1>{{$headerTitle}}</h1>
           </div>
-          
+
           @yield('content')
         </section>
       </div>
-      
+
       @include('_partials.footer')
     </div>
   </div>
@@ -43,6 +51,7 @@
 
   @stack('script')
 
-  
+
 </body>
+
 </html>

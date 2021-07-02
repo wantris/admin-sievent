@@ -47,7 +47,7 @@ class ormawaController extends Controller
         $ormawa->save();
 
         if ($ormawa) {
-            return redirect()->route('oramawa.index')->with('success', 'Data ormawa berhasil disimpan');
+            return redirect()->route('ormawa.index')->with('success', 'Data ormawa berhasil disimpan');
         } else {
             return redirect()->route('ormawa.index')->with('failed', 'Data ormawa gagal disimpan');
         }
@@ -71,7 +71,6 @@ class ormawaController extends Controller
     {
         $client = new Client();
         $url = env('BACKEND_URL') . "ormawa/update/" . $id_ormawa;
-        $client = new Client();
 
         if ($req->file('photo') || $req->file('banner')) {
             if ($req->file('photo')) {
@@ -247,5 +246,14 @@ class ormawaController extends Controller
         }
 
         return view('ormawa.detail', compact('title', 'headerTitle', 'ormawa', 'id_ormawa'));
+    }
+
+    public function delete(Request $request, $id_ormawa)
+    {
+        Ormawa::destroy($id_ormawa);
+        return response()->json([
+            "status" => 1,
+            "message" => "Ormawa berhasil dihapus",
+        ]);
     }
 }

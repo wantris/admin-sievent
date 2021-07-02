@@ -21,8 +21,8 @@
         <a href="#" class="nav-link has-dropdown"><i class="fas fa-id-badge"></i> <span>Semua Pengguna</span></a>
         <ul class="dropdown-menu">
           <li><a class="nav-link" href="{{route('admin.index')}}">Pengguna</a></li>
-          <li><a class="nav-link" href="{{route('wadir3.index')}}">Mahasiswa</a></li>
-          <li><a class="nav-link" href="{{route('wadir3.index')}}">Participant</a></li>
+          <li><a class="nav-link" href="{{route('mahasiswa.index')}}">Akun Mahasiswa</a></li>
+          <li><a class="nav-link" href="{{route('participant.index')}}">Participant</a></li>
         </ul>
       </li>
       <li class="menu-header">Informasi Event</li>
@@ -30,7 +30,8 @@
         <a href="#" class="nav-link has-dropdown"><i class="fas fa-info-circle"></i> <span>Informasi Event</span></a>
         <ul class="dropdown-menu">
           <li><a class="nav-link" href="{{route('kategorievent.index')}}">Kategori Event</a></li>
-          <li><a class="nav-link" href="{{route('wadir3.index')}}">Cakupan Ormawa</a></li>
+          <li><a class="nav-link" href="{{route('cakupanOrmawa.index')}}">Cakupan Ormawa</a></li>
+          <li><a class="nav-link" href="{{route('tipepeserta.index')}}">Tipe Peserta</a></li>
         </ul>
       </li>
       <li class="menu-header">Ormawa</li>
@@ -38,7 +39,7 @@
         <a href="#" class="nav-link has-dropdown"><i class="fas fa-sitemap"></i> <span>Ormawa</span></a>
         <ul class="dropdown-menu">
           <li><a class="nav-link" href="{{route('ormawa.index')}}">Ormawa</a></li>
-          <li><a class="nav-link" href="{{route('wadir3.index')}}">Pembina</a></li>
+          <li><a class="nav-link" href="{{route('pembina.index')}}">Pembina</a></li>
         </ul>
       </li>
       <li class="menu-header">Tim</li>
@@ -47,7 +48,7 @@
       <li class="nav-item dropdown">
         <a href="#" class="nav-link has-dropdown"><i class="fas fa-calendar-week"></i> <span>Event</span></a>
         <ul class="dropdown-menu">
-          <li><a class="nav-link" href="{{route('admin.index')}}">Event Internal</a></li>
+          <li><a class="nav-link" href="{{route('eventinternal.index')}}">Event Internal</a></li>
           <li><a class="nav-link" href="{{route('wadir3.index')}}">Event Eksternal</a></li>
         </ul>
       </li>

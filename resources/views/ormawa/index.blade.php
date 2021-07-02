@@ -21,7 +21,7 @@
                         </thead>
                         <tbody>
                             @foreach ($ormawas as $ormawa)
-                            <tr>
+                            <tr id="tr_{{$ormawa->id_ormawa}}">
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{$ormawa->nama_ormawa}}</td>
                                 <td>{{$ormawa->nama_akronim}}</td>
@@ -33,7 +33,7 @@
                                         class="btn btn-primary mt-2 d-inline">Detail</a>
                                     <a href="{{route('ormawa.edit', $ormawa->id_ormawa)}}"
                                         class="btn btn-secondary mt-2 d-inline">Edit</a>
-                                    <a href="{{route('ormawa.delete', $ormawa->id_ormawa)}}"
+                                    <a href="#" onclick="deleteOrmawa({{$ormawa->id_ormawa}})"
                                         class="btn btn-danger mt-2 d-inline">Hapus</a>
                                 </td>
                             </tr>
@@ -49,8 +49,46 @@
 
 @push('script')
 <script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
     $(document).ready(function () {
       $('#table-admin').DataTable();
     });
+
+    const deleteOrmawa = (id_ormawa) => {
+        let url = "/ormawa/delete/"+id_ormawa;
+        event.preventDefault();
+        Notiflix.Confirm.Show( 
+            'Ormawa',
+            'Apakah anda yakin ingin menghapus?',
+            'Yes',
+            'No',
+             function(){ 
+                $.ajax(
+                    {
+                        url: url,
+                        type: 'delete', 
+                        dataType: "JSON",
+                        data: {
+                            "id_ormawa": id_ormawa 
+                        },
+                        success: function (response){
+                            console.log(response.status); 
+                            if(response.status == 1){
+                                Notiflix.Notify.Success(response.message);
+                                $('#tr_' + id_ormawa).remove();
+                            }
+                        },
+                        error: function(xhr) {
+                            Notiflix.Notify.Failure('Ooopss');
+                        }
+                });
+            }, function(){
+                 // No button callback alert('If you say so...'); 
+            } ); 
+    }
 </script>
 @endpush
