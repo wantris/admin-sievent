@@ -58,10 +58,10 @@ Route::group(['prefix' => 'kategorievent'], function () {
     Route::post('/add', 'kategoriEventController@save')->name('kategorievent.save');
     Route::get('/edit/{id_kategori}', 'kategoriEventController@edit')->name('kategorievent.edit');
     Route::patch('/update/{id_kategori}', 'kategoriEventController@update')->name('kategorievent.update');
-    Route::delete('/delete/{id_kategori}', 'kategoriEventController@edit')->name('kategorievent.delete');
+    Route::delete('/delete/{id_kategori}', 'kategoriEventController@delete')->name('kategorievent.delete');
 });
 
-//  ==================== ormawa ================
+//  ==================== ormawa ================ 
 
 Route::group(['prefix' => 'ormawa'], function () {
     Route::get('/', 'ormawaController@index')->name('ormawa.index');
@@ -127,6 +127,18 @@ Route::group(['prefix' => 'mahasiswa'], function () {
     Route::delete('/delete/{nim}', 'mahasiswaController@delete')->name('mahasiswa.delete');
 });
 
+// ================== pengguna ===============
+Route::group(['prefix' => 'pengguna'], function () {
+    Route::get('/', 'penggunaController@index')->name('pengguna.index');
+    Route::get('/add', 'penggunaController@add')->name('pengguna.add');
+    Route::post('/add', 'penggunaController@save')->name('pengguna.save');
+    Route::get('/edit/{id_pengguna}', 'penggunaController@edit')->name('pengguna.edit');
+    Route::get('/relasi/{id_pengguna}', 'penggunaController@relasi')->name('pengguna.relasi');
+    Route::patch('/relasi/{id_pengguna}', 'penggunaController@updateRelasi')->name('pengguna.relasi.update');
+    Route::patch('/update/{id_pengguna}', 'penggunaController@update')->name('pengguna.update');
+    Route::delete('/delete/{id_pengguna}', 'penggunaController@delete')->name('pengguna.delete');
+});
+
 // ================== eventinternal ===============
 Route::group(['prefix' => 'eventinternal'], function () {
     Route::get('/', 'eventInternalController@index')->name('eventinternal.index');
@@ -138,4 +150,17 @@ Route::group(['prefix' => 'eventinternal'], function () {
 
     Route::get('/pengajuan/{id_eventinternal}', 'eventInternalController@seePengajuan')->name('eventinternal.pengajuan');
     Route::patch('/pengajuan/{id_eventinternal_detail}', 'eventInternalController@updatePengajuan')->name('eventinternal.pengajuan.update');
+});
+
+// ================== event eksternal ===============
+Route::group(['prefix' => 'eventeksternal'], function () {
+    Route::get('/', 'eventeksternalController@index')->name('eventeksternal.index');
+    Route::get('/add', 'eventeksternalController@add')->name('eventeksternal.add');
+    Route::post('/add', 'eventeksternalController@save')->name('eventeksternal.save');
+    Route::get('/edit/{id_eventeksternal}', 'eventeksternalController@edit')->name('eventeksternal.edit');
+    Route::patch('/update/{id_eventeksternal}', 'eventeksternalController@update')->name('eventeksternal.update');
+    Route::delete('/delete/{id_eventeksternal}', 'eventeksternalController@delete')->name('eventeksternal.delete');
+
+    Route::get('/pengajuan/{id_eventeksternal}', 'eventeksternalController@seePengajuan')->name('eventeksternal.pengajuan');
+    Route::patch('/pengajuan/{id_eventeksternal_detail}', 'eventeksternalController@updatePengajuan')->name('eventeksternal.pengajuan.update');
 });

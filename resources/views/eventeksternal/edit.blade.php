@@ -6,7 +6,7 @@
         <div class="card">
             <div class="card-body">
                 <img id="banner-image"
-                    src="{{ $event->banner_image_url}}"
+                    src="{{$event->banner_image_url}}"
                     style="width: 100%; height:300px;" alt="">
             </div>
         </div>
@@ -14,31 +14,31 @@
     <div class="col-lg-8 col-12">
         <div class="card">
             <div class="card-body">
-                <form action="{{route('eventinternal.update', $event->id_event_internal)}}"
+                <form action="{{route('eventeksternal.update', $event->id_event_eksternal)}}"
                     enctype="multipart/form-data" method="post">
                     @csrf
                     @method('patch')
                     <div class="form-group">
-                        <label>Nama Ormawa</label>
+                        <label>Cakupan Ormawa</label>
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <div class="input-group-text">
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <select class="form-control" name="ormawa" id="">
-                                <option value="{{$event->ormawa_id}}" selected>
-                                    {{$event->ormawa_ref->nama_ormawa}}
+                            <select class="form-control" required name="cakupan_ormawa_id" id="">
+                                <option selected value="{{$event->cakupan_ormawa_id}}">
+                                    {{$event->cakupan_ormawa_ref->role}}
                                 </option>
-                                @foreach ($ormawas as $ormawa)
-                                <option value="{{$ormawa->id_ormawa}}" selected>
-                                    {{$ormawa->nama_ormawa}}
+                                @foreach ($cakupans as $cakupan)
+                                <option value="{{$cakupan->id_cakupan_ormawa}}">
+                                    {{$cakupan->role}}
                                 </option>
                                 @endforeach
                             </select>
                         </div>
-                        @if ($errors->has('ormawa'))
-                        <span class="text-danger">{{ $errors->first('ormawa') }}</span>
+                        @if ($errors->has('cakupan_ormawa_id'))
+                        <span class="text-danger">{{ $errors->first('cakupan_ormawa_id') }}</span>
                         @endif
                     </div>
                     <div class="form-group">
@@ -204,7 +204,7 @@
         <div class="card">
             <div class="card-body">
                 <img id="photo-image"
-                    src="{{ $event->poster_image_url}}"
+                    src="{{ $event->poster_image_url }}"
                     style="width:100%" alt="">
             </div>
         </div>

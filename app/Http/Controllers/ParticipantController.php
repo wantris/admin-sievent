@@ -92,10 +92,6 @@ class ParticipantController extends Controller
 
         $option = ['multipart' => [
             [
-                'name'     => 'nama',
-                'contents' => $req->nama
-            ],
-            [
                 'name'     => 'phone',
                 'contents' => $req->phone
             ],
@@ -140,14 +136,18 @@ class ParticipantController extends Controller
             array_push($option['multipart'], $photoArr);
         }
 
-        $response = $client->request('POST', $url, $option);
+        try {
+            $response = $client->request('POST', $url, $option);
 
-        $body = $response->getBody();
-        $responseBody = json_decode($body);
+            $body = $response->getBody();
+            $responseBody = json_decode($body);
 
-        if ((bool)$responseBody->success) {
-            return redirect()->route('participant.edit', $id_participant)->with('success', 'Data participant berhasil diupdate');
-        } else {
+            if ((bool)$responseBody->success) {
+                return redirect()->route('participant.edit', $id_participant)->with('success', 'Data participant berhasil diupdate');
+            } else {
+                return redirect()->route('participant.edit', $id_participant)->with('failed', 'Data participant gagal diupdate');
+            }
+        } catch (\Throwable) {
             return redirect()->route('participant.edit', $id_participant)->with('failed', 'Data participant gagal diupdate');
         }
     }

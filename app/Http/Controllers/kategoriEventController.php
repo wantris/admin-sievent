@@ -51,4 +51,13 @@ class kategoriEventController extends Controller
 
         return redirect()->route('kategorievent.index')->with('success', 'Data admin berhasil diupdate');
     }
+
+    public function delete(Request $request, $id_kategori)
+    {
+        KategoriEvent::destroy($id_kategori);
+        return response()->json([
+            "status" => 1,
+            "message" => "Kategori event berhasil dihapus",
+        ]);
+    }
 }

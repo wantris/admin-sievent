@@ -5,14 +5,13 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <a href="{{route('mahasiswa.add')}}" class="btn btn-primary mb-3">Tambah Akun Mahasiswa</a>
+                <a href="{{route('pengguna.add')}}" class="btn btn-primary mb-3">Tambah pengguna</a>
                 <div class="table-responsive">
                     <table class="table table-bordered table-md" id="table-admin">
                         <thead>
-                            <tr id="">
+                            <tr>
                                 <th>No</th>
-                                <th>Nama Mahasiswa</th>
-                                <th>NIM</th>
+                                <th>Username</th>
                                 <th>Nomor Telepon</th>
                                 <th>Email</th>
                                 <th>Photo</th>
@@ -21,39 +20,36 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($mahasiswas as $mahasiswa)
-                            <tr id="tr_{{$mahasiswa->nim}}">
+                            @foreach ($penggunas as $pengguna)
+                            <tr id="tr_{{$pengguna->id_pengguna}}">
                                 <td>{{$loop->iteration}}</td>
-                                <td>{{$mahasiswa->nama_mahasiswa}}</td>
-                                <td>{{$mahasiswa->nim}}</td>
-                                <td>@if ($mahasiswa->phone)
-                                    {{$mahasiswa->phone}}
-                                    @endif
-
-                                </td>
-                                <td>@if ($mahasiswa->email)
-                                    {{$mahasiswa->email}}
-                                    @endif
+                                <td>{{$pengguna->username}}</td>
+                                <td>
+                                    {{$pengguna->phone}}
                                 </td>
                                 <td>
-                                    @if ($mahasiswa->photo)
-                                    <img src="{{ env('BACKEND_ASSET_URL') . "assets/img/photo-pengguna/".$mahasiswa->photo}}"
+                                    {{$pengguna->email}}
+                                </td>
+                                <td>
+                                    @if($pengguna->photo)
+                                    <img src="{{ env('BACKEND_ASSET_URL') . "assets/img/photo-pengguna/".$pengguna->photo}}"
                                         style="width: 50px; height:50px" alt="">
                                     @else
                                     <img style="width: 50px; height:50px"
-                                        src="{{asset('assets/icons/participant_icon.png')}}" alt="">
+                                        src="{{asset('assets/icons/pengguna_icon.png')}}" alt="">
                                     @endif
                                 </td>
-                                <td>{{ date("d/m/Y", strtotime($mahasiswa->created_at)) }}</td>
+                                <td> {{ date("d/m/Y", strtotime($pengguna->created_at)) }}</td>
                                 <td>
-                                    <a href="{{route('mahasiswa.edit', $mahasiswa->nim)}}"
-                                        class="btn btn-secondary d-inline">Edit</a>
-                                    <a href="#" onclick="deleteMahasiswa({{$mahasiswa->nim}})"
+                                    <a href="{{route('pengguna.edit', $pengguna->id_pengguna)}}"
+                                        class="btn btn-secondary d-inline">Edit Akun</a>
+                                    <a href="#" onclick="deletepengguna({{$pengguna->id_pengguna}})"
                                         class="btn btn-danger mt-2 d-inline">Hapus</a>
+                                    <a href="{{route('pengguna.relasi', $pengguna->id_pengguna)}}"
+                                        class="btn btn-primary d-inline">Edit Relasi</a>
                                 </td>
                             </tr>
                             @endforeach
-
                         </tbody>
                     </table>
                 </div>
@@ -74,7 +70,7 @@
     var DateFilterFunction = (function (oSettings, aData, iDataIndex) {
         var dateStart = parseDateValue(start_date);
         var dateEnd = parseDateValue(end_date);
-        var evalDate= parseDateValue(aData[6]);
+        var evalDate= parseDateValue(aData[5]);
        
         if ( ( isNaN( dateStart ) && isNaN( dateEnd ) ) ||
             ( isNaN( dateStart ) && evalDate <= dateEnd ) ||
@@ -132,7 +128,6 @@
                         }
                     }
                 ],
-                pagingType: "full_numbers",
         });
 
         let status = '';
@@ -182,12 +177,11 @@
         }
     });
 
-    const deleteMahasiswa = (nim) => {
-        console.log(nim);
-        let url = "/mahasiswa/delete/"+nim;
+    const deletepengguna = (id_pengguna) => {
+        let url = "/pengguna/delete/"+id_pengguna;
         event.preventDefault();
         Notiflix.Confirm.Show( 
-            'Mahasiswa',
+            'Pengguna',
             'Apakah anda yakin ingin menghapus?',
             'Yes',
             'No',
@@ -198,17 +192,16 @@
                         type: 'delete', 
                         dataType: "JSON",
                         data: {
-                            "nim": nim 
+                            "id_pengguna": id_pengguna 
                         },
                         success: function (response){
                             console.log(response.status); 
                             if(response.status == 1){
                                 Notiflix.Notify.Success(response.message);
-                                $('#tr_' + nim).remove();
+                                $('#tr_' + id_pengguna).remove();
                             }
                         },
                         error: function(xhr) {
-                            console.log(xhr);
                             Notiflix.Notify.Failure('Ooopss');
                         }
                 });

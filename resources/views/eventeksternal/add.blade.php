@@ -5,40 +5,36 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <img id="banner-image"
-                    src="{{ $event->banner_image_url}}"
-                    style="width: 100%; height:300px;" alt="">
+                <img id="banner-image" src="{{url('assets/banner-upload.png')}}"
+                    style="width: 100%; height:300px;filter: grayscale(80%);" alt="">
             </div>
         </div>
     </div>
     <div class="col-lg-8 col-12">
         <div class="card">
             <div class="card-body">
-                <form action="{{route('eventinternal.update', $event->id_event_internal)}}"
-                    enctype="multipart/form-data" method="post">
+                <form action="{{route('eventeksternal.save')}}" enctype="multipart/form-data" method="post">
                     @csrf
-                    @method('patch')
+                    @method('post')
                     <div class="form-group">
-                        <label>Nama Ormawa</label>
+                        <label>Cakupan Ormawa</label>
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <div class="input-group-text">
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <select class="form-control" name="ormawa" id="">
-                                <option value="{{$event->ormawa_id}}" selected>
-                                    {{$event->ormawa_ref->nama_ormawa}}
-                                </option>
-                                @foreach ($ormawas as $ormawa)
-                                <option value="{{$ormawa->id_ormawa}}" selected>
-                                    {{$ormawa->nama_ormawa}}
+                            <select class="form-control" required name="cakupan_ormawa_id" id="">
+                                <option selected>Pilih Cakupan Ormawa</option>
+                                @foreach ($cakupans as $cakupan)
+                                <option value="{{$cakupan->id_cakupan_ormawa}}">
+                                    {{$cakupan->role}}
                                 </option>
                                 @endforeach
                             </select>
                         </div>
-                        @if ($errors->has('ormawa'))
-                        <span class="text-danger">{{ $errors->first('ormawa') }}</span>
+                        @if ($errors->has('cakupan_ormawa_id'))
+                        <span class="text-danger">{{ $errors->first('cakupan_ormawa_id') }}</span>
                         @endif
                     </div>
                     <div class="form-group">
@@ -49,8 +45,7 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <input type="text" required value="{{$event->nama_event}}" name="nama"
-                                class="form-control phone-number">
+                            <input type="text" required name="nama" class="form-control phone-number">
                         </div>
                         @if ($errors->has('nama'))
                         <span class="text-danger">{{ $errors->first('nama') }}</span>
@@ -64,10 +59,8 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <select class="form-control" name="kategori" id="">
-                                <option value="{{$event->kategori_ref->id_kategori}}" selected>
-                                    {{$event->kategori_ref->nama_kategori}}
-                                </option>
+                            <select class="form-control" required name="kategori" id="">
+                                <option selected>Pilih Kategori</option>
                                 @foreach ($kategoris as $kategori)
                                 <option value="{{$kategori->id_kategori}}">
                                     {{$kategori->nama_kategori}}
@@ -87,10 +80,8 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <select class="form-control" name="tipe_peserta" id="">
-                                <option value="{{$event->tipe_peserta_ref->id_tipe_peserta}}" selected>
-                                    {{$event->tipe_peserta_ref->nama_tipe}}
-                                </option>
+                            <select class="form-control" required name="tipe_peserta" id="">
+                                <option selected>Pilih Tipe Peserta</option>
                                 @foreach ($tipes as $tipe)
                                 <option value="{{$tipe->id_tipe_peserta}}">
                                     {{$tipe->nama_tipe}}
@@ -110,8 +101,7 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <input type="text" required value="{{$event->maks_participant}}" name="maks"
-                                class="form-control phone-number">
+                            <input type="text" required name="maks" class="form-control phone-number">
                         </div>
                         @if ($errors->has('maks'))
                         <span class="text-danger">{{ $errors->first('maks') }}</span>
@@ -125,8 +115,11 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <input type="text" required value="{{$event->role}}" name="role"
-                                class="form-control phone-number">
+                            <select name="role" id="" class="form-control">
+                                <option selected>Pilih Role</option>
+                                <option value="Individu">Individu</option>
+                                <option value="Team">Team</option>
+                            </select>
                         </div>
                         @if ($errors->has('role'))
                         <span class="text-danger">{{ $errors->first('role') }}</span>
@@ -140,8 +133,7 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <input type="date" required value="{{$event->tgl_buka}}" name="tgl_buka"
-                                class="form-control phone-number">
+                            <input type="date" required name="tgl_buka" class="form-control phone-number">
                         </div>
                         @if ($errors->has('tgl_buka'))
                         <span class="text-danger">{{ $errors->first('tgl_buka') }}</span>
@@ -155,8 +147,7 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <input type="date" required value="{{$event->tgl_tutup}}" name="tgl_tutup"
-                                class="form-control phone-number">
+                            <input type="date" required name="tgl_tutup" class="form-control phone-number">
                         </div>
                         @if ($errors->has('tgl_tutup'))
                         <span class="text-danger">{{ $errors->first('tgl_tutup') }}</span>
@@ -164,7 +155,7 @@
                     </div>
                     <div class="form-group">
                         <label>Deskripsi</label>
-                        <textarea name="deskripsi" class="form-control">{{$event->deskripsi}}</textarea>
+                        <textarea name="deskripsi" required class="form-control"></textarea>
 
                         @if ($errors->has('deksripsi'))
                         <span class="text-danger">{{ $errors->first('deksripsi') }}</span>
@@ -172,11 +163,8 @@
                     </div>
                     <div class="form-group">
                         <label>Ketentuan</label>
-                        <textarea name="ketentuan" class="form-control">{{$event->ketentuan}}</textarea>
+                        <textarea name="ketentuan" class="form-control"></textarea>
 
-                        @if ($errors->has('ketentuan'))
-                        <span class="text-danger">{{ $errors->first('ketentuan') }}</span>
-                        @endif
                     </div>
                     <div class="form-group">
                         <label>Poster</label>
@@ -193,8 +181,6 @@
                         <span class="text-danger">{{ $errors->first('banner') }}</span>
                         @endif
                     </div>
-                    <input type="hidden" name="oldPoster" value="{{$event->poster_image}}">
-                    <input type="hidden" name="oldBanner" value="{{$event->banner_image}}">
                     <input type="submit" value="Submit" class="btn btn-primary" style="width: 100%">
                 </form>
             </div>
@@ -203,9 +189,8 @@
     <div class="col-lg-4 col-12">
         <div class="card">
             <div class="card-body">
-                <img id="photo-image"
-                    src="{{ $event->poster_image_url}}"
-                    style="width:100%" alt="">
+                <img id="photo-image" src="{{url('assets/poster-bg.png')}}" style="width:100%; filter:grayscale(80%)"
+                    alt="">
             </div>
         </div>
     </div>

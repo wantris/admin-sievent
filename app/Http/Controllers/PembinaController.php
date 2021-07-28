@@ -18,19 +18,16 @@ class PembinaController extends Controller
 
         $pembinas = Pembina::all();
         foreach ($pembinas as $pembina) {
+            $pembina->dosenRef = null;
 
             // call API
-            $client = new Client();
-            $url = "http://localhost:7000/dosen/" . $pembina->nidn;
-            $response = $client->request('GET', $url, [
-                'verify'  => false,
-            ]);
-            $dosen = json_decode($response->getBody());
+            $dosen = $this->getDosenSingle($pembina);
 
             if ($dosen) {
-                $pembina->nama_dosen = $dosen->nama_dosen;
+                $pembina->dosenRef = $dosen;
             }
         }
+
         return view('pembina.index', compact('title', 'headerTitle', 'pembinas'));
     }
 
@@ -39,15 +36,10 @@ class PembinaController extends Controller
         $title = "Pembina";
         $headerTitle = "Tambah Data Pembina";
 
-        // call API
-        $client = new Client();
-        $url = "http://localhost:7000/dosen";
-        $response = $client->request('GET', $url, [
-            'verify'  => false,
-        ]);
-
         $ormawas = Ormawa::all();
-        $dosens = json_decode($response->getBody());
+        $dosens = $this->getAllDosen();
+
+
         return view('pembina.add', compact('title', 'headerTitle', 'dosens', 'ormawas'));
     }
 
@@ -73,11 +65,12 @@ class PembinaController extends Controller
             $pembina = new Pembina();
             $pembina->nidn = $req->nidn;
             $pembina->ormawa_id = $req->ormawa;
-            $pembina->periode = $req->tahun;
+            $pembina->tahun_jabatan = $req->tahun;
             $pembina->status = $req->status;
             $pembina->save();
             return redirect()->route('pembina.index')->with('success', 'Data pembina berhasil ditambah');
         } catch (Throwable $e) {
+            dd($e);
             return redirect()->back()->with('failed', 'Data pembina gagal ditambah');
         }
     }
@@ -91,21 +84,9 @@ class PembinaController extends Controller
         $ormawas = Ormawa::all();
 
         if ($pembina) {
-            $urlFirst = "http://localhost:7000/dosen/" . $pembina->nidn;
-            $urlGet = "http://localhost:7000/dosen";
 
-            $client = new Client(); //GuzzleHttp\Client
-
-            $responseFirst = $client->request('GET', $urlFirst, [
-                'verify'  => false,
-            ]);
-
-            $responseGet = $client->request('GET', $urlGet, [
-                'verify'  => false,
-            ]);
-
-            $dosen = json_decode($responseFirst->getBody());
-            $dosens = json_decode($responseGet->getBody());
+            $dosen = $this->getDosenSingle($pembina);
+            $dosens = $this->getAllDosen();
 
             return view('pembina.edit', compact('title', 'headerTitle', 'pembina', 'id_pembina', 'dosen', 'dosens', 'ormawas'));
         }
@@ -116,11 +97,13 @@ class PembinaController extends Controller
     public function update(PembinaStoreRequest $req, $id_pembina)
     {
         $pembina = Pembina::where('id_pembina', $id_pembina)->first();
+
         if (!$pembina) {
             return redirect()->route('pembina.index')->with('success', 'Data pembina tidak ada');
         }
 
         $check = Pembina::where('nidn', $req->nidn)->where('status', 1)->where('ormawa_id', '!=', $req->ormawa)->first();
+
         if ($check) {
             return redirect()->route('pembina.index')->with('failed', 'Data pembina aktif di ormawa lain');
         }
@@ -129,6 +112,7 @@ class PembinaController extends Controller
 
             if ($req->status == 1) {
                 $pembinaSpec = Pembina::where('ormawa_id', $pembina->ormawa_id)->get();
+
                 foreach ($pembinaSpec as $item) {
                     Pembina::where('id_pembina', $item->id_pembina)->update([
                         'status' => 0
@@ -136,11 +120,14 @@ class PembinaController extends Controller
                 }
             }
 
-            $pembina->nidn = $req->nidn;
-            $pembina->ormawa_id = $req->ormawa;
-            $pembina->periode = $req->tahun;
-            $pembina->status = $req->status;
-            $pembina->save();
+            Pembina::where('id_pembina', $pembina->id_pembina)->update([
+                'nidn' => $req->nidn,
+                'ormawa_id' => $req->ormawa,
+                'tahun_jabatan' => $req->tahun,
+                'status' => $req->status
+            ]);
+
+
             return redirect()->route('pembina.index')->with('success', 'Data pembina berhasil diupdate');
         } catch (Throwable $e) {
             return redirect()->back()->with('failed', 'Data pembina gagal diupdate');
@@ -154,5 +141,38 @@ class PembinaController extends Controller
             "status" => 1,
             "message" => "pembina berhasil dihapus",
         ]);
+    }
+
+    public function getAllDosen()
+    {
+        try {
+            // call API
+            $client = new Client();
+            $url = env('SECOND_BACKEND_URL') . "dosen";
+            $response = $client->request('GET', $url, [
+                'verify'  => false,
+            ]);
+
+            $dosens = json_decode($response->getBody());
+
+            return $dosens;
+        } catch (\Throwable $err) {
+        }
+    }
+
+    public function getDosenSingle($pembina)
+    {
+        try {
+            // call API
+            $client = new Client();
+            $url = env('SECOND_BACKEND_URL') . "dosen/" . $pembina->nidn;
+            $response = $client->request('GET', $url, [
+                'verify'  => false,
+            ]);
+            $dosen = json_decode($response->getBody());
+
+            return $dosen;
+        } catch (\Throwable $err) {
+        }
     }
 }

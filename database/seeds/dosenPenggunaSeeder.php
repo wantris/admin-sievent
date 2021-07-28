@@ -1,12 +1,11 @@
 <?php
 
-use App\Pengguna;
 use Illuminate\Database\Seeder;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\DB;
+use App\Pengguna;
 use Illuminate\Support\Facades\Hash;
 
-class mahasiswaPenggunaSeeder extends Seeder
+class dosenPenggunaSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,25 +15,25 @@ class mahasiswaPenggunaSeeder extends Seeder
     public function run()
     {
         $client = new Client();
-        $url = env('SECOND_BACKEND_URL') . "mahasiswa";
+        $url = env('SECOND_BACKEND_URL') . "dosen";
         $response = $client->request('GET', $url, [
             'verify'  => false,
         ]);
-        $mahasiswas = json_decode($response->getBody());
+        $dosens = json_decode($response->getBody());
 
-        foreach ($mahasiswas as $mhs) {
-            $check = Pengguna::where('nim', $mhs->nim)->first();
-            echo $mhs->nim;
+        foreach ($dosens as $dosen) {
+            $check = Pengguna::where('nidn', $dosen->nidn)->first();
+            echo $dosen->nidn;
             if (!$check) {
                 $ps = new Pengguna();
-                $ps->username = $mhs->nim;
+                $ps->username = $dosen->nidn;
                 $ps->password = Hash::make('@Polindra123');
-                $ps->is_mahasiswa = 1;
+                $ps->is_mahasiswa = 0;
                 $ps->is_wadir3 = 0;
                 $ps->is_pembina = 0;
                 $ps->is_participant = 0;
-                $ps->is_dosen = 0;
-                $ps->nim = $mhs->nim;
+                $ps->is_dosen = 1;
+                $ps->nidn = $dosen->nidn;
                 $ps->save();
             }
         }

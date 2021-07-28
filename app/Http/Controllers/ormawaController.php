@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\CakupanOrmawa;
 use App\Http\Requests\AdminStoreRequest;
 use App\Http\Requests\ormawaStoreRequest;
 use App\Ormawa;
@@ -16,13 +17,8 @@ class ormawaController extends Controller
     {
         $title = "Organisasi Mahasiswa";
         $headerTitle = "Data Organisasi Mahasiswa";
+        $ormawas = $this->getAllOrmawa();
 
-        $client = new Client();
-        $url = env('BACKEND_URL') . "ormawa";
-        $response = $client->request('GET', $url, [
-            'verify'  => false,
-        ]);
-        $ormawas = json_decode($response->getBody());
 
         return view('ormawa.index', compact('title', 'headerTitle', 'ormawas'));
     }
@@ -47,6 +43,11 @@ class ormawaController extends Controller
         $ormawa->save();
 
         if ($ormawa) {
+            $cakupan = new CakupanOrmawa();
+            $cakupan->ormawa_id = $ormawa->id_ormawa;
+            $cakupan->role = $ormawa->nama_ormawa;
+            $cakupan->save();
+
             return redirect()->route('ormawa.index')->with('success', 'Data ormawa berhasil disimpan');
         } else {
             return redirect()->route('ormawa.index')->with('failed', 'Data ormawa gagal disimpan');
@@ -58,7 +59,7 @@ class ormawaController extends Controller
         $title = "Organisasi Mahasiswa";
         $headerTitle = "Update Data Organisasi Mahasiswa";
 
-        $ormawa = Ormawa::find($id_ormawa);
+        $ormawa = $this->getOrmawaById($id_ormawa);
 
         if (!$ormawa) {
             return redirect()->route('ormawa.index')->with('failed', 'Data ormawa tidak ada');
@@ -240,7 +241,8 @@ class ormawaController extends Controller
         $title = "Organisasi Mahasiswa";
         $headerTitle = "Detail Data Organisasi Mahasiswa";
 
-        $ormawa = Ormawa::find($id_ormawa);
+        $ormawa = $this->getOrmawaById($id_ormawa);
+
         if (!$ormawa) {
             return redirect()->route('ormawa.index')->with('failed', 'Data ormawa tidak ada');
         }
@@ -255,5 +257,38 @@ class ormawaController extends Controller
             "status" => 1,
             "message" => "Ormawa berhasil dihapus",
         ]);
+    }
+
+    public function getAllOrmawa()
+    {
+        try {
+            $client = new Client();
+            $url = env('BACKEND_URL') . "ormawa";
+            $response = $client->request('GET', $url, [
+                'verify'  => false,
+            ]);
+            $ormawas = json_decode($response->getBody())->data;
+
+            return $ormawas;
+        } catch (\Throwable $err) {
+            $ormawas = collect();
+        }
+    }
+
+    public function getOrmawaById($id_ormawa)
+    {
+        $ormawa = null;
+        try {
+            $client = new Client();
+            $url = env('BACKEND_URL') . "ormawa/detail/" . $id_ormawa;
+            $response = $client->request('GET', $url, [
+                'verify'  => false,
+            ]);
+            $ormawa = json_decode($response->getBody());
+
+            return $ormawa->data;
+        } catch (\Throwable $err) {
+            return $ormawa;
+        }
     }
 }

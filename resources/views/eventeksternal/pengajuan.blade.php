@@ -11,8 +11,8 @@
                             aria-controls="home" aria-selected="true">Pengajuan</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="profile-tab3" data-toggle="tab" href="#event-internal" role="tab"
-                            aria-controls="profile" aria-selected="false">Event Internal</a>
+                        <a class="nav-link" id="profile-tab3" data-toggle="tab" href="#event-eksternal" role="tab"
+                            aria-controls="profile" aria-selected="false">Event eksternal</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="profile-tab4" data-toggle="tab" href="#berkas" role="tab"
@@ -25,7 +25,8 @@
             <div class="card-body">
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="pengajuan" role="tabpanel" aria-labelledby="home-tab">
-                        <form action="{{route('eventinternal.pengajuan.update', $pengajuan->id_event_internal_detail)}}"
+                        <form
+                            action="{{route('eventeksternal.pengajuan.update', $pengajuan->id_event_eksternal_detail)}}"
                             method="post">
                             @csrf
                             @method('patch')
@@ -37,13 +38,13 @@
                                             <i class="fas fa-signature"></i>
                                         </div>
                                     </div>
-                                    <input type="text" disabled value="{{$pengajuan->event_internal_ref->nama_event}}"
+                                    <input type="text" disabled value="{{$event->nama_event}}"
                                         name="nama" class="form-control phone-number">
-                                    <input type="hidden" required value="{{$pengajuan->event_internal_id}}"
-                                        name="event_internal_id" class="form-control phone-number">
+                                    <input type="hidden" required value="{{$pengajuan->event_eksternal_id}}"
+                                        name="event_eksternal_id" class="form-control phone-number">
                                 </div>
-                                @if ($errors->has('event_internal_id'))
-                                <span class="text-danger">{{ $errors->first('event_internal_id') }}</span>
+                                @if ($errors->has('event_eksternal_id'))
+                                <span class="text-danger">{{ $errors->first('event_eksternal_id') }}</span>
                                 @endif
                             </div>
                             <div class="form-group">
@@ -102,11 +103,11 @@
                             <input type="submit" value="Submit" class="btn btn-primary" style="width: 100%">
                         </form>
                     </div>
-                    <div class="tab-pane fade event-internal" id="event-internal" role="tabpanel"
+                    <div class="tab-pane fade event-eksternal" id="event-eksternal" role="tabpanel"
                         aria-labelledby="profile-tab">
                         <img id="photo-image"
-                            src="{{$event->poster_image_url}}"
-                            style="width:100%;" class="img-fluid" alt="">
+                            src="{{ $event->poster_image_url}}"
+                            style="width:100%" alt="">
                         <form action="" enctype="multipart/form-data" method="post">
                             @csrf
                             @method('patch')
@@ -119,8 +120,8 @@
                                         </div>
                                     </div>
                                     <select disabled class="form-control" name="ormawa" id="">
-                                        <option value="{{$event->ormawa_ref->id_ormawa}}" selected>
-                                            {{$event->ormawa_ref->nama_ormawa}}
+                                        <option value="{{$event->cakupan_ormawa_id}}" selected>
+                                            {{$event->cakupan_ormawa_ref->role}}
                                         </option>
                                     </select>
                                 </div>
@@ -268,25 +269,23 @@
                     </div>
                     <div class="tab-pane fade berkas" id="berkas" role="tabpanel" aria-labelledby="profile-tab">
                         @foreach ($pengajuan->file_pengajuan as $item)
-                            @if ($item->tipe == "pengajuan")
-                            <div class="row mb-3">
-                                <div class="col-1"><a data-toggle="collapse"
-                                        href="#collapseExample_{{$item->id_file_event_internal_detail}}" role="button"
-                                        aria-expanded="false" aria-controls="collapseExample"><img
-                                            src="{{url('assets/icons/pdf.svg')}}" alt=""></a></div>
-                                <div class="col-3">
-                                    <input type="text"
-                                        style="border:none; background:none; border-bottom:1px solid #6777ef !important"
-                                        name="" disabled value="Berkas Pengajuan Event" id="">
-                                </div>
+                        <div class="row mb-3">
+                            <div class="col-1"><a data-toggle="collapse"
+                                    href="#collapseExample_{{$item->id_berkas_event_detail}}" role="button"
+                                    aria-expanded="false" aria-controls="collapseExample"><img
+                                        src="{{url('assets/icons/pdf.svg')}}" alt=""></a></div>
+                            <div class="col-3">
+                                <input type="text"
+                                    style="border:none; background:none; border-bottom:1px solid #6777ef !important"
+                                    name="" disabled value="Berkas Pengajuan Event" id="">
                             </div>
-                            <div class="collapse" id="collapseExample_{{$item->id_file_event_internal_detail}}">
-                                <div class="container_berkas" data-filename="{{$item->filename_url}}"
-                                    data-id="{{$item->id_file_event_internal_detail}}"
-                                    id="pengajuan_{{$item->id_file_event_internal_detail}}">
-                                </div>
+                        </div>
+                        <div class="collapse" id="collapseExample_{{$item->id_berkas_event_detail}}">
+                            <div class="container_berkas" data-filename="{{$item->filename}}"
+                                data-id="{{$item->id_berkas_event_detail}}"
+                                id="pengajuan_{{$item->id_berkas_event_detail}}">
                             </div>
-                            @endif
+                        </div>
                         @endforeach
                     </div>
                 </div>
@@ -311,7 +310,7 @@
 
     $('.container_berkas').each(function(){
         let id = $(this).data('id');
-        let url =  $(this).data('filename');
+        let url = "{{env('BACKEND_ASSET_URL') . 'assets/berkas-pengajuan/'}}/" + $(this).data('filename');
         let container = "#pengajuan_"+id;
         PDFObject.embed(url, container);
     });

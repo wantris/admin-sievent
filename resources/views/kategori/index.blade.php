@@ -17,13 +17,13 @@
                         </thead>
                         <tbody>
                             @foreach ($kategoris as $kategori)
-                            <tr>
+                            <tr id="tr_{{$kategori->id_kategori}}">
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{$kategori->nama_kategori}}</td>
                                 <td>
                                     <a href="{{route('kategorievent.edit', $kategori->id_kategori)}}"
                                         class="btn btn-secondary d-inline">Edit</a>
-                                    <a href="{{route('kategorievent.delete', $kategori->id_kategori)}}"
+                                    <a href="#" onclick="deleteKategori({{$kategori->id_kategori}})"
                                         class="btn btn-danger d-inline">Hapus</a>
                                 </td>
                             </tr>
@@ -39,8 +39,48 @@
 
 @push('script')
 <script>
-    $(document).ready(function () {
-      $('#table-admin').DataTable();
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
     });
+    
+    $(document).ready(function () {
+        $('#table-admin').DataTable();
+    });
+
+    const deleteKategori = (id_kategori) => {
+        let url = "/kategorievent/delete/"+id_kategori;
+        event.preventDefault();
+        Notiflix.Confirm.Show( 
+            'Kategori Event',
+            'Apakah anda yakin ingin menghapus?',
+            'Yes',
+            'No',
+             function(){ 
+                $.ajax(
+                    {
+                        url: url,
+                        type: 'delete', 
+                        dataType: "JSON",
+                        data: {
+                            "id_kategori": id_kategori
+                        },
+                        success: function (response){
+                            console.log(response.status); 
+                            if(response.status == 1){
+                                Notiflix.Notify.Success(response.message);
+                                $('#tr_' + id_kategori).remove();
+                            }
+                        },
+                        error: function(xhr) {
+                            console.log(xhr);
+                            Notiflix.Notify.Failure('Ooopss');
+                        }
+                });
+            }, function(){
+                 // No button callback alert('If you say so...'); 
+            } ); 
+    }
 </script>
 @endpush

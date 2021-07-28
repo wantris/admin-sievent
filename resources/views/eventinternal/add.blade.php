@@ -3,10 +3,9 @@
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <img id="banner-image" src="" style="width: 100%; height:300px;" alt="">
-            </div>
+        <div class="card-body">
+            <img id="banner-image" src="{{url('assets/banner-upload.png')}}"
+                style="width: 100%; height:300px;filter: grayscale(80%);" alt="">
         </div>
     </div>
     <div class="col-lg-8 col-12">
@@ -184,7 +183,8 @@
     <div class="col-lg-4 col-12">
         <div class="card">
             <div class="card-body">
-                <img id="photo-image" src="" style="width:100%" alt="">
+                <img id="photo-image" src="{{url('assets/poster-bg.png')}}" style="width:100%; filter:grayscale(80%)"
+                    alt="">
             </div>
         </div>
     </div>

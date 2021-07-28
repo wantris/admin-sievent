@@ -5,8 +5,13 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <img id="banner-image" src="{{ env('BACKEND_ASSET_URL') . "assets/img/banner-ormawa/$ormawa->banner"}}"
-                    style="width: 100%; height:300px;" alt="">
+              @if ($ormawa->banner)
+                <img id="banner-image" src="{{$ormawa->banner_image_url}}"
+                style="width: 100%; height:300px;" alt="">
+              @else
+                <img id="banner-image" src="{{url('assets/banner-ormawa-upload.png')}}"
+                style="width: 100%; height:300px;filter: grayscale(80%);" alt="">
+              @endif
             </div>
         </div>
     </div>
@@ -138,8 +143,13 @@
     <div class="col-lg-4 col-12">
         <div class="card">
             <div class="card-body">
-                <img id="photo-image" src="{{ env('BACKEND_ASSET_URL') . "assets/img/ormawa-logo/$ormawa->photo"}}"
-                    style="width:100%" alt="">
+               @if ($ormawa->photo)
+                    <img id="photo-image" src="{{$ormawa->photo_image_url}}"
+                    style="width:100%;" alt="">
+               @else
+                    <img id="photo-image" src="{{url('assets/no-image.png')}}"
+                    style="width:100%;filter: grayscale(80%);" alt="">
+               @endif
             </div>
         </div>
     </div>

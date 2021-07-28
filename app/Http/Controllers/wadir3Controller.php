@@ -21,7 +21,7 @@ class wadir3Controller extends Controller
 
             // call API
             $client = new Client();
-            $url = "http://localhost:7000/dosen/" . $wadir3->nidn;
+            $url = env('SECOND_BACKEND_URL') . "dosen/" . $wadir3->nidn;
             $response = $client->request('GET', $url, [
                 'verify'  => false,
             ]);
@@ -39,7 +39,7 @@ class wadir3Controller extends Controller
         $title = "Wakil Direktur 3";
         $headerTitle = "Tambah data Wakil Direktur 3";
 
-        $url = "http://localhost:7000/dosen/";
+        $url = env('SECOND_BACKEND_URL') . "dosen/";
 
         $client = new Client(); //GuzzleHttp\Client
 
@@ -80,7 +80,7 @@ class wadir3Controller extends Controller
 
         $wadir3 = Wadir3::where('id_wadir3', $id)->first();
         if ($wadir3) {
-            $url = "http://localhost:7000/dosen/" . $wadir3->nidn;
+            $url = env('SECOND_BACKEND_URL') . "dosen/" . $wadir3->nidn;
 
             $client = new Client(); //GuzzleHttp\Client
 

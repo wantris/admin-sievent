@@ -6,6 +6,32 @@
         <div class="card">
             <div class="card-body">
                 <a href="{{route('eventinternal.add')}}" class="btn btn-primary mb-3">Tambah Event Internal</a>
+                <div class="row mb-5">
+                    <div class="col-lg-3 col-12">
+                        <select class="form-control" id="kategori-filter">
+                            <option selected value="">Filter Kategori</option>
+                            @foreach ($kategoris as $kategori)
+                            <option value="{{$kategori->nama_kategori}}">{{$kategori->nama_kategori}}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-12">
+                        <select class="form-control" id="status-filter">
+                            <option value="">Pilih Status</option>
+                            <option value="Terverifikasi">Terverifikasi</option>
+                            <option value="Invalid">Invalid</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-12">
+                        <select class="form-control" id="ormawa-filter">
+                            <option value="">Pilih Ormawa</option>
+                            @foreach ($ormawas as $ormawa)
+                                <option value="{{$ormawa->nama_ormawa}}">{{$ormawa->nama_ormawa}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-bordered table-md" id="table-admin">
                         <thead>
@@ -48,7 +74,7 @@
                                 </td>
                                 <td>
                                     @if ($event->status == 1)
-                                    <span class="badge badge-pill badge-success">Valid</span>
+                                    <span class="badge badge-pill badge-success">Terverifikasi</span>
                                     @else
                                     <span class="badge badge-pill badge-danger">Invalid</span>
                                     @endif
@@ -61,9 +87,12 @@
                                         <a href="{{route('eventinternal.edit', $event->id_event_internal)}}"
                                             class="btn btn-secondary mb-2 mt-2 d-inline" title="Edit"><i
                                                 class="far fa-edit"></i></a>
+                                    </div>
+                                    <div class="d-block mb-2">
                                         <a onclick="deleteEvent({{$event->id_event_internal}})" href="#"
                                             class="btn btn-danger mb-2 mt-2 d-inline" title="Hapus"><i
                                                 class="fas fa-trash"></i></a>
+
                                     </div>
                                     <div class="d-block">
                                         <a href="{{route('eventinternal.pengajuan', $event->id_event_internal)}}"
@@ -94,6 +123,7 @@
         var dateStart = parseDateValue(start_date);
         var dateEnd = parseDateValue(end_date);
         var evalDate= parseDateValue(aData[9]);
+        console.log(aData[9]);
        
         if ( ( isNaN( dateStart ) && isNaN( dateEnd ) ) ||
             ( isNaN( dateStart ) && evalDate <= dateEnd ) ||
@@ -127,7 +157,7 @@
 
     $(document).ready(function () {
         var $dTable = $('#table-admin').DataTable({
-            "dom":"<'row'<'col-sm-4'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
+            "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
                         "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 buttons: [ 
@@ -151,6 +181,24 @@
                         }
                     }
                 ],
+        });
+
+        let status = '';
+        let kategori = '';
+
+        $('#status-filter').on('change', function(){
+            status = this.value;
+            $dTable.column(8).search(status).draw();   
+        });
+
+        $('#kategori-filter').on('change', function(){
+            kategori = this.value;
+            $dTable.column(4).search(kategori).draw();  
+        });
+
+        $('#ormawa-filter').on('change', function(){
+            ormawa = this.value;
+            $dTable.column(2).search(ormawa).draw();  
         });
 
         //menambahkan daterangepicker di dalam datatables
@@ -179,6 +227,8 @@
             $.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(DateFilterFunction, 1));
             $dTable.draw();
         });
+
+        
 
     //   $('#table-admin').DataTable( {
     //     dom: 'Bfrtip',

@@ -19,15 +19,14 @@ class EventInternalController extends Controller
         $title = "Event Internal";
         $headerTitle = "Data Event Internal";
 
-        $client = new Client();
-        $url = env('BACKEND_URL') . "eventinternal";
-        $response = $client->request('GET', $url, [
-            'verify'  => false,
-        ]);
+        $events = $this->getAllEventInternal();
 
-        $events = json_decode($response->getBody());
+        $ormawa_controller = new ormawaController;
+        $ormawas = $ormawa_controller->getAllOrmawa();
 
-        return view('eventinternal.index', compact('title', 'headerTitle', 'events'));
+        $kategoris = KategoriEvent::all();
+
+        return view('eventinternal.index', compact('title', 'headerTitle', 'events', 'kategoris', 'ormawas'));
     }
 
     public function add()
@@ -146,6 +145,7 @@ class EventInternalController extends Controller
 
     public function edit($id_eventinternal)
     {
+
         $title = "Event Internal";
         $headerTitle = "Update Data Event Internal";
 
@@ -156,12 +156,7 @@ class EventInternalController extends Controller
 
         // get api
         try {
-            $client = new Client();
-            $url = env('BACKEND_URL') . "eventinternal/detail/" . $id_eventinternal;
-            $response = $client->request('GET', $url, [
-                'verify'  => false,
-            ]);
-            $event = json_decode($response->getBody());
+            $event = $this->getEventInternalById($id_eventinternal);
 
             return view('eventinternal.edit', compact(
                 'title',
@@ -282,18 +277,14 @@ class EventInternalController extends Controller
 
         // get api
         try {
-            $client = new Client();
-            $url = env('BACKEND_URL') . "eventinternal/pengajuan/" . $id_eventinternal;
-            $response = $client->request('GET', $url, [
-                'verify'  => false,
-            ]);
+            $event = $this->getEventInternalById($id_eventinternal);
+            $pengajuan = $this->getPengajuanEventInternal($id_eventinternal);
 
-            $pengajuan = json_decode($response->getBody());
-            $statusCode = $response->getStatusCode();
             return view('eventinternal.pengajuan', compact(
                 'title',
                 'headerTitle',
                 'pengajuan',
+                'event'
             ));
         } catch (Throwable $err) {
             return redirect()->route('eventinternal.index')->with('failed', 'Pengajuan event internal tidak ada');
@@ -343,5 +334,57 @@ class EventInternalController extends Controller
             "status" => 1,
             "message" => "Event internal berhasil dihapus",
         ]);
+    }
+
+    public function getAllEventInternal()
+    {
+        try {
+            $client = new Client();
+            $url = env('BACKEND_URL') . "eventinternal";
+            $response = $client->request('GET', $url, [
+                'verify'  => false,
+            ]);
+
+            $events = json_decode($response->getBody());
+
+            return $events;
+        } catch (\Throwable $err) {
+            $events = collect();
+        }
+    }
+
+    public function getEventInternalById($id_eventinternal)
+    {
+        $event = null;
+        try {
+            $client = new Client();
+            $url = env('BACKEND_URL') . "eventinternal/detail/" . $id_eventinternal;
+            $response = $client->request('GET', $url, [
+                'verify'  => false,
+            ]);
+            $event = json_decode($response->getBody());
+
+            return $event;
+        } catch (\Throwable $err) {
+            return $event;
+        }
+    }
+
+    public function getPengajuanEventInternal($id_eventinternal)
+    {
+        $pengajuan = null;
+        try {
+            $client = new Client();
+            $url = env('BACKEND_URL') . "eventinternal/pengajuan/" . $id_eventinternal;
+            $response = $client->request('GET', $url, [
+                'verify'  => false,
+            ]);
+
+            $pengajuan = json_decode($response->getBody());
+
+            return $pengajuan;
+        } catch (\Throwable $err) {
+            return $pengajuan;
+        }
     }
 }

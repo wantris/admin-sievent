@@ -55,7 +55,7 @@
                                     <i class="fas fa-id-card"></i>
                                 </div>
                             </div>
-                            <input type="text" value="{{$pembina->periode}}" name="tahun" id="jabatan-inp"
+                            <input type="text" value="{{$pembina->tahun_jabatan}}" name="tahun" id="jabatan-inp"
                                 class="form-control">
                         </div>
                         @if ($errors->has('status'))
@@ -72,11 +72,11 @@
                             </div>
                             <select name="status" id="" class="form-control" required>
                                 @if ($pembina->status == 1)
-                                <option value="{{$pembina->status}}" selected>Aktif</option>
-                                <option value="0">Tidak Aktif</option>
+                                    <option value="1" selected>Aktif</option>
+                                    <option value="0">Tidak Aktif</option>
                                 @else
-                                <option value="{{$pembina->status}}" selected>Tidak Aktif</option>
-                                <option value="1">Aktif</option>
+                                    <option value="0" selected>Tidak Aktif</option>
+                                    <option value="1">Aktif</option>
                                 @endif
                             </select>
                         </div>

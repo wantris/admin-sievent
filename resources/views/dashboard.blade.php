@@ -12,7 +12,7 @@
                     <h4>Total Admin</h4>
                 </div>
                 <div class="card-body">
-                    {{$admin}}
+                    {{$admin->count()}}
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@
                     <h4>Total Ormawa</h4>
                 </div>
                 <div class="card-body">
-                    {{$ormawa}}
+                    {{$ormawa->count()}}
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@
                     <h4>Total participant</h4>
                 </div>
                 <div class="card-body">
-                    {{$ps}}
+                    {{$ps->count()}}
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@
                     <h4>Total Mahasiswa</h4>
                 </div>
                 <div class="card-body">
-                    {{$mhs}}
+                    {{$mhs->count()}}
                 </div>
             </div>
         </div>
@@ -72,7 +72,7 @@
                     <h4>Total Event Internal</h4>
                 </div>
                 <div class="card-body">
-                    {{$ei}}
+                    {{$ei->count()}}
                 </div>
             </div>
         </div>
@@ -87,7 +87,7 @@
                     <h4>Total Event Eksternal</h4>
                 </div>
                 <div class="card-body">
-                    {{$ee}}
+                    {{$ee->count()}}
                 </div>
             </div>
         </div>
@@ -102,7 +102,7 @@
                     <h4>Total Pembina</h4>
                 </div>
                 <div class="card-body">
-                    {{$pembina}}
+                    {{$pembina->count()}}
                 </div>
             </div>
         </div>
@@ -117,7 +117,7 @@
                     <h4>Total Tim</h4>
                 </div>
                 <div class="card-body">
-                    {{$tim}}
+                    {{$tim->count()}}
                 </div>
             </div>
         </div>
@@ -132,7 +132,7 @@
                     <h4>Pendaftar Event Internal</h4>
                 </div>
                 <div class="card-body">
-                    {{$eir}}
+                    {{$eir->count()}}
                 </div>
             </div>
         </div>
@@ -147,11 +147,101 @@
                     <h4>Pendaftar Event Eksternal</h4>
                 </div>
                 <div class="card-body">
-                    {{$eer}}
+                    {{$eer->count()}}
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-md-6 col-12">
+        <div class="card">
+            <div class="card-body">
+                <canvas id="canvas" height="280px" width="100%"></canvas>
             </div>
         </div>
     </div>
 </div>
 
 @endsection
+
+@push('script')
+<script>
+    var year = '{{$year}}';
+    console.log(year);
+    var participants = '{{$participants}}';
+
+    const labels = ['januari', 'februari','maret','april','mei'];
+    const data = {
+            labels: labels,
+            datasets: [{
+                label: 'My First Dataset',
+                data: [65, 59, 80, 81, 56],
+                backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 205, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)'
+                ],
+            borderColor: [
+            'rgb(255, 99, 132)',
+            'rgb(255, 159, 64)',
+            'rgb(255, 205, 86)',
+            'rgb(75, 192, 192)',
+            'rgb(54, 162, 235)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    var ctx = document.getElementById("canvas").getContext("2d");
+    const config = new Chart(ctx,{
+            type: 'bar',
+            data: data,
+            options: {
+                scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        },
+    });
+
+
+    // var barChartData = {
+    //     labels: year,
+    //     datasets: [{
+    //         label: 'Participant',
+    //         backgroundColor: "pink",
+    //         data: participants
+    //     }]
+    // };
+
+    // window.onload = function() {
+
+    
+
+    // window.myBar = new Chart(ctx, {
+    //     type: 'bar',
+    //     data: barChartData,
+    //     options: {
+    //         elements: {
+    //             rectangle: {
+    //                 borderWidth: 2,
+    //                 borderColor: '#c1c1c1',
+    //                 borderSkipped: 'bottom'
+    //             }
+    //         },
+    //         responsive: true,
+    //         title: {
+    //             display: true,
+    //             text: 'Yearly Participant Joined'
+    //         }
+    //     }
+    // });
+    // };
+
+
+</script>
+@endpush

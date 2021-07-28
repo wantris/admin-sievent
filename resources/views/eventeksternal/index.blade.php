@@ -5,55 +5,103 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <a href="{{route('mahasiswa.add')}}" class="btn btn-primary mb-3">Tambah Akun Mahasiswa</a>
+                <a href="{{route('eventeksternal.add')}}" class="btn btn-primary mb-3">Tambah Event Eksternal</a>
+                <div class="row mb-4">
+                    <div class="col-lg-3 col-12">
+                        <select class="form-control" id="kategori-filter">
+                            <option selected value="">Filter Kategori</option>
+                            @foreach ($kategoris as $kategori)
+                            <option value="{{$kategori->nama_kategori}}">{{$kategori->nama_kategori}}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-12">
+                        <select class="form-control" id="status-filter">
+                            <option value="">Pilih Status</option>
+                            <option value="Terverifikasi">Terverifikasi</option>
+                            <option value="Invalid">Invalid</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3 col-12">
+                        <select class="form-control" id="ormawa-filter">
+                            <option value="">Pilih Ormawa</option>
+                            @foreach ($ormawas as $ormawa)
+                                <option value="{{$ormawa->nama_ormawa}}">{{$ormawa->nama_ormawa}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-bordered table-md" id="table-admin">
                         <thead>
-                            <tr id="">
+                            <tr>
                                 <th>No</th>
-                                <th>Nama Mahasiswa</th>
-                                <th>NIM</th>
-                                <th>Nomor Telepon</th>
-                                <th>Email</th>
-                                <th>Photo</th>
-                                <th>Created At</th>
+                                <th>Nama Event</th>
+                                <th>Nama Ormawa</th>
+                                <th>Tipe Peserta</th>
+                                <th>Kategori</th>
+                                <th>Role</th>
+                                <th>Tanggal Buka</th>
+                                <th>Tanggal Tutup</th>
+                                <th>Status</th>
+                                <th>Created at</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($mahasiswas as $mahasiswa)
-                            <tr id="tr_{{$mahasiswa->nim}}">
+                            @foreach ($events as $event)
+                            <tr id="tr_{{$event->id_event_eksternal}}">
                                 <td>{{$loop->iteration}}</td>
-                                <td>{{$mahasiswa->nama_mahasiswa}}</td>
-                                <td>{{$mahasiswa->nim}}</td>
-                                <td>@if ($mahasiswa->phone)
-                                    {{$mahasiswa->phone}}
-                                    @endif
-
-                                </td>
-                                <td>@if ($mahasiswa->email)
-                                    {{$mahasiswa->email}}
-                                    @endif
+                                <td>{{$event->nama_event}}</td>
+                                <td>{{$event->cakupan_ormawa_ref->role}}</td>
+                                <td>{{$event->tipe_peserta_ref->nama_tipe}}</td>
+                                <td>{{$event->kategori_ref->nama_kategori}}</td>
+                                <td>{{$event->role}}</td>
+                                <td>
+                                    @php
+                                    $tglbuka = Carbon\Carbon::parse($event->tgl_buka)->toDatetime()->format('d, M
+                                    Y');
+                                    @endphp
+                                    {{$tglbuka}}
                                 </td>
                                 <td>
-                                    @if ($mahasiswa->photo)
-                                    <img src="{{ env('BACKEND_ASSET_URL') . "assets/img/photo-pengguna/".$mahasiswa->photo}}"
-                                        style="width: 50px; height:50px" alt="">
+                                    @php
+                                    $tgltutup = Carbon\Carbon::parse($event->tgl_tutup)->toDatetime()->format('d, M
+                                    Y');
+                                    @endphp
+                                    {{$tgltutup}}
+                                </td>
+                                <td>
+                                    @if ($event->status == 1)
+                                    <span class="badge badge-pill badge-success">Terverifikasi</span>
                                     @else
-                                    <img style="width: 50px; height:50px"
-                                        src="{{asset('assets/icons/participant_icon.png')}}" alt="">
+                                    <span class="badge badge-pill badge-danger">Invalid</span>
                                     @endif
                                 </td>
-                                <td>{{ date("d/m/Y", strtotime($mahasiswa->created_at)) }}</td>
                                 <td>
-                                    <a href="{{route('mahasiswa.edit', $mahasiswa->nim)}}"
-                                        class="btn btn-secondary d-inline">Edit</a>
-                                    <a href="#" onclick="deleteMahasiswa({{$mahasiswa->nim}})"
-                                        class="btn btn-danger mt-2 d-inline">Hapus</a>
+                                    {{ date("d/m/Y", strtotime($event->created_at)) }}
+                                </td>
+                                <td>
+                                    <div class="d-block mb-2">
+                                        <a href="{{route('eventeksternal.edit', $event->id_event_eksternal)}}"
+                                            class="btn btn-secondary mb-2 mt-2 d-inline" title="Edit"><i
+                                                class="far fa-edit"></i></a>
+                                    </div>
+                                    <div class="d-block mb-2">
+                                        <a onclick="deleteEvent({{$event->id_event_eksternal}})" href="#"
+                                            class="btn btn-danger mb-2 mt-2 d-inline" title="Hapus"><i
+                                                class="fas fa-trash"></i></a>
+
+                                    </div>
+                                    <div class="d-block">
+                                        <a href="{{route('eventeksternal.pengajuan', $event->id_event_eksternal)}}"
+                                            class="btn btn-primary mb-2 mt-2 d-inline" title="Lihat Pengajuan"><i
+                                                class="fas fa-book-open"></i></a>
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach
-
                         </tbody>
                     </table>
                 </div>
@@ -74,7 +122,7 @@
     var DateFilterFunction = (function (oSettings, aData, iDataIndex) {
         var dateStart = parseDateValue(start_date);
         var dateEnd = parseDateValue(end_date);
-        var evalDate= parseDateValue(aData[6]);
+        var evalDate= parseDateValue(aData[9]);
        
         if ( ( isNaN( dateStart ) && isNaN( dateEnd ) ) ||
             ( isNaN( dateStart ) && evalDate <= dateEnd ) ||
@@ -123,16 +171,15 @@
                             if(start_date != null && end_date != null){
                                 convertStart(String(start_date));
                                 convertEnd(String(end_date));
-                                $('c[r=A1] t', sheet).text( 'Data Event Internal '+ start_month + " - "+ end_month);
+                                $('c[r=A1] t', sheet).text( 'Data Event Eksternal '+ start_month + " - "+ end_month);
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }else{
-                                $('c[r=A1] t', sheet).text( 'Data Event Internal');
+                                $('c[r=A1] t', sheet).text( 'Data Event Eksternal');
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }
                         }
                     }
                 ],
-                pagingType: "full_numbers",
         });
 
         let status = '';
@@ -140,16 +187,21 @@
 
         $('#status-filter').on('change', function(){
             status = this.value;
-            $dTable.column(4).search(kategori).column(8).search(status).draw();   
+            $dTable.column(8).search(status).draw();   
         });
 
         $('#kategori-filter').on('change', function(){
             kategori = this.value;
-            $dTable.column(4).search(kategori).column(8).search(status).draw();  
+            $dTable.column(4).search(kategori).draw();  
+        });
+
+        $('#ormawa-filter').on('change', function(){
+            ormawa = this.value;
+            $dTable.column(2).search(ormawa).draw();  
         });
 
         //menambahkan daterangepicker di dalam datatables
-        $("div.datesearchbox").html('<div class="input-group mb-3"> <div class="input-group-addon"> <i class="glyphicon glyphicon-calendar"></i> </div><input type="text" class="form-control pull-right" id="datesearch" placeholder="Berdasarkan Tanggal.."> </div>');
+        $("div.datesearchbox").html('<div class="input-group mb-3"> <div class="input-group-addon"> <i class="glyphicon glyphicon-calendar"></i> </div><input type="text" class="form-control pull-right" id="datesearch" placeholder="Berdasarkan tanggal.."> </div>');
 
         document.getElementsByClassName("datesearchbox")[0].style.textAlign = "right";
 
@@ -174,6 +226,7 @@
             $.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(DateFilterFunction, 1));
             $dTable.draw();
         });
+
     });
 
     $.ajaxSetup({
@@ -182,12 +235,11 @@
         }
     });
 
-    const deleteMahasiswa = (nim) => {
-        console.log(nim);
-        let url = "/mahasiswa/delete/"+nim;
+    const deleteEvent = (id_eventeksternal) => {
+        let url = "/eventeksternal/delete/"+id_eventeksternal;
         event.preventDefault();
         Notiflix.Confirm.Show( 
-            'Mahasiswa',
+            'Event eksternal',
             'Apakah anda yakin ingin menghapus?',
             'Yes',
             'No',
@@ -198,13 +250,13 @@
                         type: 'delete', 
                         dataType: "JSON",
                         data: {
-                            "nim": nim 
+                            "id_eventeksternal": id_eventeksternal
                         },
                         success: function (response){
                             console.log(response.status); 
                             if(response.status == 1){
                                 Notiflix.Notify.Success(response.message);
-                                $('#tr_' + nim).remove();
+                                $('#tr_' + id_eventeksternal).remove();
                             }
                         },
                         error: function(xhr) {
@@ -216,5 +268,7 @@
                  // No button callback alert('If you say so...'); 
             } ); 
     }
+
+
 </script>
 @endpush

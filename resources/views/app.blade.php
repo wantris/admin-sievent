@@ -11,6 +11,7 @@
       border: 1rem solid rgba(0, 0, 0, .1);
     }
   </style>
+  @stack('style')
 </head>
 
 <body>

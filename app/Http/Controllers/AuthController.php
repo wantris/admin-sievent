@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Admin;
+use App\Pengguna;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
@@ -20,20 +21,38 @@ class AuthController extends Controller
         $username = $request->username;
         $password = $request->password;
 
-        $check_username = Admin::where('username', $username)->first();
-        // check username
-        if ($check_username) {
-            if (Hash::check($password, $check_username->password)) {
-                Session::put('is_admin', '1');
-                Session::put('id_admin', $check_username->id_admin);
-                return redirect()->route('dashboard');
+        if ($request->role == "admin") {
+            $check_username = Admin::where('username', $username)->first();
+            // check username
+            if ($check_username) {
+                if (Hash::check($password, $check_username->password)) {
+                    Session::put('is_admin', '1');
+                    Session::put('is_wadir3', '0');
+                    Session::put('id_pengguna', $check_username->id_admin);
+                    return redirect()->route('dashboard');
+                } else {
+                    return redirect()->back()->with('failed', 'Password salah');
+                }
             } else {
-                return redirect()->back()->with('failed', 'Password salah');
+                return redirect()->back()->with('failed', 'Username tidak ada');
             }
-        } else {
-            return redirect()->back()->with('failed', 'Username tidak ada');
+        } elseif ($request->role == "wadir3") {
+            $check = Pengguna::where('username', $username)->first();
+            if ($check) {
+                if (Hash::check($password, $check->password)) {
+                    Session::put('is_admin', '0');
+                    Session::put('is_wadir3', '1');
+                    Session::put('id_pengguna', $check->id_pengguna);
+                    return redirect()->route('dashboard');
+                } else {
+                    return redirect()->back()->with('failed', 'Password salah');
+                }
+            } else {
+                return redirect()->back()->with('failed', 'Username tidak ada');
+            }
         }
     }
+
 
     public function logout(Request $request)
     {

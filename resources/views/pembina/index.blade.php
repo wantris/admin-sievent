@@ -23,9 +23,13 @@
                             @foreach ($pembinas as $pembina)
                             <tr id="tr_{{$pembina->id_pembina}}">
                                 <td>{{$loop->iteration}}</td>
-                                <td>{{$pembina->nama_dosen}}</td>
+                                <td>
+                                    @if ($pembina->dosenRef)
+                                        {{$pembina->dosenRef->nama_dosen}}
+                                    @endif
+                                </td>
                                 <td>{{$pembina->ormawaRef->nama_ormawa}}</td>
-                                <td>{{$pembina->periode}}</td>
+                                <td>{{$pembina->tahun_jabatan}}</td>
                                 <td>
                                     @if ($pembina->status == "1")
                                     <button disabled="disabled" class="btn btn-primary">Aktif</button>

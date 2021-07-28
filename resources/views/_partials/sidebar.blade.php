@@ -8,6 +8,7 @@
     </div>
     <ul class="sidebar-menu">
       <li><a class="nav-link" href="blank.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+      @if (Session::get('is_admin') == "1")
       <li class="menu-header">Admin</li>
       <li class="nav-item dropdown">
         <a href="#" class="nav-link has-dropdown"><i class="fas fa-portrait"></i> <span>Admin</span></a>
@@ -16,15 +17,19 @@
           <li><a class="nav-link" href="{{route('wadir3.index')}}">Wadir 3</a></li>
         </ul>
       </li>
+      @endif
+      @if (Session::get('is_admin') == "1")
       <li class="menu-header">Semua Pengguna</li>
       <li class="nav-item dropdown">
         <a href="#" class="nav-link has-dropdown"><i class="fas fa-id-badge"></i> <span>Semua Pengguna</span></a>
         <ul class="dropdown-menu">
-          <li><a class="nav-link" href="{{route('admin.index')}}">Pengguna</a></li>
+          <li><a class="nav-link" href="{{route('pengguna.index')}}">Pengguna</a></li>
           <li><a class="nav-link" href="{{route('mahasiswa.index')}}">Akun Mahasiswa</a></li>
           <li><a class="nav-link" href="{{route('participant.index')}}">Participant</a></li>
         </ul>
       </li>
+      @endif
+      @if (Session::get('is_admin') == "1")
       <li class="menu-header">Informasi Event</li>
       <li class="nav-item dropdown">
         <a href="#" class="nav-link has-dropdown"><i class="fas fa-info-circle"></i> <span>Informasi Event</span></a>
@@ -34,6 +39,7 @@
           <li><a class="nav-link" href="{{route('tipepeserta.index')}}">Tipe Peserta</a></li>
         </ul>
       </li>
+      @endif
       <li class="menu-header">Ormawa</li>
       <li class="nav-item dropdown">
         <a href="#" class="nav-link has-dropdown"><i class="fas fa-sitemap"></i> <span>Ormawa</span></a>
@@ -49,7 +55,7 @@
         <a href="#" class="nav-link has-dropdown"><i class="fas fa-calendar-week"></i> <span>Event</span></a>
         <ul class="dropdown-menu">
           <li><a class="nav-link" href="{{route('eventinternal.index')}}">Event Internal</a></li>
-          <li><a class="nav-link" href="{{route('wadir3.index')}}">Event Eksternal</a></li>
+          <li><a class="nav-link" href="{{route('eventeksternal.index')}}">Event Eksternal</a></li>
         </ul>
       </li>
       <li class="menu-header">Pendaftaran</li>
