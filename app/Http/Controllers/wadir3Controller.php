@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Wadir3StoreRequest;
 use App\Wadir3;
 use GuzzleHttp\Client;
+use App\Http\Controllers\ApiDosenController;
+use App\Pengguna;
 use Illuminate\Http\Request;
 
 class wadir3Controller extends Controller
@@ -20,15 +22,11 @@ class wadir3Controller extends Controller
         foreach ($wadir3s as $wadir3) {
 
             // call API
-            $client = new Client();
-            $url = env('SECOND_BACKEND_URL') . "dosen/" . $wadir3->nidn;
-            $response = $client->request('GET', $url, [
-                'verify'  => false,
-            ]);
-            $dosen = json_decode($response->getBody());
+            $api_dosen = new ApiDosenController;
+            $dosen = $api_dosen->getDosenByNidn($wadir3->nidn);
 
             if ($dosen) {
-                $wadir3->nama_dosen = $dosen->nama_dosen;
+                $wadir3->dosenRef = $dosen;
             }
         }
         return view('wadir3.index', compact('title', 'headerTitle', 'wadir3s'));
@@ -39,15 +37,11 @@ class wadir3Controller extends Controller
         $title = "Wakil Direktur 3";
         $headerTitle = "Tambah data Wakil Direktur 3";
 
-        $url = env('SECOND_BACKEND_URL') . "dosen/";
+        // call API
+        $api_dosen = new ApiDosenController;
+        $dosens = $api_dosen->getAllDosen();
 
-        $client = new Client(); //GuzzleHttp\Client
-
-        $response = $client->request('GET', $url, [
-            'verify'  => false,
-        ]);
-
-        $dosens = json_decode($response->getBody());
+        $dosens = $dosens;
 
         return view('wadir3.add', compact('title', 'headerTitle', 'dosens'));
     }
@@ -62,15 +56,29 @@ class wadir3Controller extends Controller
                 Wadir3::where('id_wadir3', $wadir3->id_wadir3)->update([
                     'status' => 0
                 ]);
+
+                Pengguna::where('nidn', $wadir3->nidn)->update([
+                    'is_wadir3' => 0
+                ]);
             }
         }
 
-        $wadir3 = new Wadir3();
-        $wadir3->nidn = $req->nidn;
-        $wadir3->status = $req->status;
-        $wadir3->save();
+        try {
+            $wadir3 = new Wadir3();
+            $wadir3->nidn = $req->nidn;
+            $wadir3->status = $req->status;
+            $wadir3->save();
 
-        return redirect()->route('wadir3.index')->with('success', 'Data Wadir Direktur 3 berhasil disimpan');
+            if ($wadir3) {
+                $pengguna = Pengguna::where('nidn', $req->nidn)->first();
+                $pengguna->is_wadir3 = 1;
+                $pengguna->save();
+
+                return redirect()->route('wadir3.index')->with('success', 'Data Wadir Direktur 3 berhasil disimpan');
+            }
+        } catch (\Throwable $err) {
+            return redirect()->route('wadir3.index')->with('failed', 'Data Wadir Direktur 3 gagal disimpan');
+        }
     }
 
     public function edit($id)
@@ -80,17 +88,13 @@ class wadir3Controller extends Controller
 
         $wadir3 = Wadir3::where('id_wadir3', $id)->first();
         if ($wadir3) {
-            $url = env('SECOND_BACKEND_URL') . "dosen/" . $wadir3->nidn;
-
-            $client = new Client(); //GuzzleHttp\Client
-
-            $response = $client->request('GET', $url, [
-                'verify'  => false,
-            ]);
-
-            $dosen = json_decode($response->getBody());
+            // call API
+            $api_dosen = new ApiDosenController;
+            $dosens = $api_dosen->getAllDosen();
+            $dosen = $api_dosen->getDosenByNidn($wadir3->nidn);
+            $dosens = $dosens;
         }
-        return view('wadir3.edit', compact('title', 'headerTitle', 'wadir3', 'id', 'dosen'));
+        return view('wadir3.edit', compact('title', 'headerTitle', 'wadir3', 'id', 'dosen', 'dosens'));
     }
 
     public function update(Wadir3StoreRequest $req, $id)
@@ -110,5 +114,24 @@ class wadir3Controller extends Controller
         $wadir3->save();
 
         return redirect()->route('wadir3.index')->with('success', 'Data Wadir Direktur 3 berhasil di update');
+    }
+
+    public function delete(Request $request, $id_wadir3)
+    {
+        try {
+            Wadir3::where('id_wadir3', $id_wadir3)->delete();
+
+            return response()->json([
+                "status" => 1,
+                "message" => $id_wadir3,
+            ]);
+        } catch (\Throwable $err) {
+            Wadir3::where('id_wadir3', $id_wadir3)->delete();
+
+            return response()->json([
+                "status" => 0,
+                "message" => $$err,
+            ]);
+        }
     }
 }

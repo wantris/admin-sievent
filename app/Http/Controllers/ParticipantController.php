@@ -16,13 +16,7 @@ class ParticipantController extends Controller
         $title = "Participant";
         $headerTitle = "Data Participant";
 
-        $client = new Client();
-        $url = env('BACKEND_URL') . "participant";
-        $response = $client->request('GET', $url, [
-            'verify'  => false,
-        ]);
-        $participants = json_decode($response->getBody());
-
+        $participants = $this->getAllData();
 
         return view('participant.index', compact('title', 'headerTitle', 'participants'));
     }
@@ -42,21 +36,29 @@ class ParticipantController extends Controller
             return redirect()->back()->with('failed', 'Username Pengguna sudah ada');
         }
 
+        $client = new Client();
+        $url = env('BACKEND_URL') . "participant/add";
+        $option = ['multipart' => [
+            [
+                'name'     => 'nama_participant',
+                'contents' => $req->nama
+            ],
+            [
+                'name'     => 'username',
+                'contents' => $req->username
+            ],
+            [
+                'name'     => 'password',
+                'contents' => $req->password
+            ],
+        ]];
+
         try {
-            $participant = new Participant();
-            $participant->nama_participant = $req->nama;
-            $participant->save();
 
-            $pengguna = new Pengguna();
-            $pengguna->username = $req->username;
-            $pengguna->password = Hash::make($req->password);
-            $pengguna->is_mahasiswa = 0;
-            $pengguna->is_wadir3 = 0;
-            $pengguna->is_pembina = 0;
-            $pengguna->is_participant = 1;
-            $pengguna->participant_id = $participant->id_participant;
-            $pengguna->save();
+            $response = $client->request('POST', $url, $option);
 
+            $body = $response->getBody();
+            $responseBody = json_decode($body);
 
             return redirect()->route('participant.index')->with('success', 'Data Participant berhasil ditambah');
         } catch (Throwable $e) {
@@ -69,13 +71,7 @@ class ParticipantController extends Controller
         $title = "Participant";
         $headerTitle = "Update Data Participant";
 
-        $client = new Client();
-        $url = env('BACKEND_URL') . "participant/edit/" . $id_participant;
-        $response = $client->request('GET', $url, [
-            'verify'  => false,
-        ]);
-        $ps = json_decode($response->getBody());
-
+        $ps = $this->getDataById($id_participant);
 
         if (!$ps) {
             return redirect()->route('participant.index')->with('failed', 'Data Participanttidak ada');
@@ -92,6 +88,10 @@ class ParticipantController extends Controller
 
         $option = ['multipart' => [
             [
+                'name'     => 'nama',
+                'contents' => $req->nama
+            ],
+            [
                 'name'     => 'phone',
                 'contents' => $req->phone
             ],
@@ -104,7 +104,7 @@ class ParticipantController extends Controller
                 'contents' => $req->oldPassword
             ],
             [
-                'name'     => 'newPassword',
+                'name'     => 'new_password',
                 'contents' => $req->newPassword
             ],
             [
@@ -147,7 +147,8 @@ class ParticipantController extends Controller
             } else {
                 return redirect()->route('participant.edit', $id_participant)->with('failed', 'Data participant gagal diupdate');
             }
-        } catch (\Throwable) {
+        } catch (\Throwable $err) {
+            dd($err);
             return redirect()->route('participant.edit', $id_participant)->with('failed', 'Data participant gagal diupdate');
         }
     }
@@ -160,5 +161,43 @@ class ParticipantController extends Controller
             "status" => 1,
             "message" => "Participant berhasil dihapus",
         ]);
+    }
+
+    public function getAllData()
+    {
+        $participants = collect();
+
+        try {
+            $client = new Client();
+            $url = env('BACKEND_URL') . "participant";
+            $response = $client->request('GET', $url, [
+                'verify'  => false,
+            ]);
+            $participants = json_decode($response->getBody());
+
+            return $participants->data;
+        } catch (\Throwable $err) {
+
+            return $participants;
+        }
+    }
+
+    public function getDataById($id_participant)
+    {
+        $participant = null;
+        try {
+            $client = new Client();
+            $url = env('BACKEND_URL') . "participant/detail/" . $id_participant;
+
+            $response = $client->request('GET', $url, [
+                'verify'  => false,
+            ]);
+
+            $participant = json_decode($response->getBody());
+
+            return $participant->data;
+        } catch (\Throwable $err) {
+            return $participant;
+        }
     }
 }

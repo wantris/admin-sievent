@@ -16,10 +16,16 @@
                                 <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <select id="" class="form-control" required disabled>
-                                <option selected value="{{(int)$wadir3->nidn}}">{{$dosen->nama_dosen}}</option>
-                            </select>   
-                            <input type="hidden" name="nidn" value="{{(int)$wadir3->nidn}}">                        
+                            <select id="" name="nidn" class="form-control" >
+                                @foreach ($dosens as $dosen)
+                                    @if ($wadir3->nidn == $dosen->dosen_nidn)
+                                        <option value="{{$dosen->dosen_nidn}}" selected>{{ucfirst($dosen->dosen_nama)}}</option>
+                                    @else
+                                        <option value="{{$dosen->dosen_nidn}}">{{ucfirst($dosen->dosen_nama)}}</option>
+                                    @endif
+                                    
+                                @endforeach
+                            </select>                        
                         </div>
                         @if ($errors->has('nidn'))
                             <span class="text-danger">{{ $errors->first('nidn') }}</span>

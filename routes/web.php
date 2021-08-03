@@ -47,7 +47,7 @@ Route::group(['prefix' => 'wadir3'], function () {
     Route::post('/add', 'wadir3Controller@save')->name('wadir3.save');
     Route::get('/edit/{id}', 'wadir3Controller@edit')->name('wadir3.edit');
     Route::patch('/update/{id}', 'wadir3Controller@update')->name('wadir3.update');
-    Route::delete('/delete/{id}', 'wadir3Controller@edit')->name('wadir3.delete');
+    Route::delete('/delete/{id}', 'wadir3Controller@delete')->name('wadir3.delete');
 });
 
 // =================== kategori event ============
@@ -72,6 +72,7 @@ Route::group(['prefix' => 'ormawa'], function () {
     Route::patch('/update/{id_ormawa}', 'ormawaController@update')->name('ormawa.update');
     Route::delete('/delete/{id_ormawa}', 'ormawaController@delete')->name('ormawa.delete');
 });
+
 
 // ============ cakupan ormawa ====================
 
@@ -127,6 +128,16 @@ Route::group(['prefix' => 'mahasiswa'], function () {
     Route::delete('/delete/{nim}', 'mahasiswaController@delete')->name('mahasiswa.delete');
 });
 
+// ================== dosen ===============
+Route::group(['prefix' => 'dosen'], function () {
+    Route::get('/', 'dosenController@index')->name('dosen.index');
+    Route::get('/add', 'dosenController@runSeeder')->name('dosen.add');
+    Route::post('/add', 'dosenController@save')->name('dosen.save');
+    Route::get('/edit/{nidn}', 'dosenController@edit')->name('dosen.edit');
+    Route::patch('/update/{nidn}', 'dosenController@update')->name('dosen.update');
+    Route::delete('/delete/{nidn}', 'dosenController@delete')->name('dosen.delete');
+});
+
 // ================== pengguna ===============
 Route::group(['prefix' => 'pengguna'], function () {
     Route::get('/', 'penggunaController@index')->name('pengguna.index');
@@ -163,4 +174,25 @@ Route::group(['prefix' => 'eventeksternal'], function () {
 
     Route::get('/pengajuan/{id_eventeksternal}', 'eventeksternalController@seePengajuan')->name('eventeksternal.pengajuan');
     Route::patch('/pengajuan/{id_eventeksternal_detail}', 'eventeksternalController@updatePengajuan')->name('eventeksternal.pengajuan.update');
+});
+
+
+//  ==================== team ================ 
+
+Route::group(['prefix' => 'team'], function () {
+    Route::get('/{type}', 'teamController@index')->name('team.index');
+    Route::get('/add', 'teamController@add')->name('team.add');
+    Route::post('/add', 'teamController@save')->name('team.save');
+    Route::get('/detail/{id_team}', 'teamController@detail')->name('team.detail');
+    Route::get('/edit/{id_team}', 'teamController@edit')->name('team.edit');
+    Route::patch('/update/{id_team}', 'teamController@update')->name('team.update');
+    Route::delete('/delete/{id_team}', 'teamController@delete')->name('team.delete');
+    Route::post('/updatestatus/{id_team}', 'teamController@updateStatus')->name('team.delete');
+});
+
+//  ==================== registration =====================
+
+Route::group(['prefix' => 'registration'], function () {
+    Route::get('/eventinternal', 'EventInternalRegisController@index')->name('registrations.eventinternal.index');
+    Route::post('/eventinternal/updatestatus/{id_regis}', 'EventInternalRegisController@updateStatus')->name('registrations.eventinternal.updatestatus');
 });

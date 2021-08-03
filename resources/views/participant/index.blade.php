@@ -14,6 +14,7 @@
                                 <th>Nama Participant</th>
                                 <th>Nomor Telepon</th>
                                 <th>Email</th>
+                                <th>Alamat</th>
                                 <th>Photo</th>
                                 <th>Created At</th>
                                 <th>Action</th>
@@ -24,22 +25,22 @@
                             <tr id="tr_{{$participant->id_participant}}">
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{$participant->nama_participant}}</td>
-                                <td>@if ($participant->pengguna_ref)
+                                <td>
                                     {{$participant->pengguna_ref->phone}}
-                                    @endif
-
-                                </td>
-                                <td>@if ($participant->pengguna_ref)
-                                    {{$participant->pengguna_ref->email}}
-                                    @endif
                                 </td>
                                 <td>
-                                    @if ($participant->pengguna_ref)
-                                    <img src="{{ env('BACKEND_ASSET_URL') . "assets/img/photo-pengguna/".$participant->pengguna_ref->photo}}"
+                                    {{$participant->pengguna_ref->email}}
+                                </td>
+                                <td>
+                                    {{$participant->pengguna_ref->alamat}}
+                                </td>
+                                <td>
+                                    @if ($participant->pengguna_ref->photo)
+                                    <img src="{{$participant->pengguna_ref->photo_image_url}}"
                                         style="width: 50px; height:50px" alt="">
                                     @else
                                     <img style="width: 50px; height:50px"
-                                        src="{{asset('assets/icons/participant_icon.png')}}" alt="">
+                                        src="{{asset('assets/icons/pengguna_icon2.png')}}" alt="">
                                     @endif
                                 </td>
                                 <td> {{ date("d/m/Y", strtotime($participant->created_at)) }}</td>
@@ -71,7 +72,7 @@
     var DateFilterFunction = (function (oSettings, aData, iDataIndex) {
         var dateStart = parseDateValue(start_date);
         var dateEnd = parseDateValue(end_date);
-        var evalDate= parseDateValue(aData[5]);
+        var evalDate= parseDateValue(aData[6]);
        
         if ( ( isNaN( dateStart ) && isNaN( dateEnd ) ) ||
             ( isNaN( dateStart ) && evalDate <= dateEnd ) ||
@@ -108,22 +109,29 @@
             "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
                         "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                "columnDefs": [
+                    {
+                        "targets": [ 4 ],
+                        "visible": false,
+                        "searchable": true
+                    },
+                ],
                 buttons: [ 
                     'colvis',    
                     {
                         extend: 'excelHtml5',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                            columns: [1, 2, 3, 4]
                         },
                         customize: function ( xlsx ) {
                             var sheet = xlsx.xl.worksheets['sheet1.xml'];
                             if(start_date != null && end_date != null){
                                 convertStart(String(start_date));
                                 convertEnd(String(end_date));
-                                $('c[r=A1] t', sheet).text( 'Data Event Internal '+ start_month + " - "+ end_month);
+                                $('c[r=A1] t', sheet).text( 'Data Partisipan '+ start_month + " - "+ end_month);
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }else{
-                                $('c[r=A1] t', sheet).text( 'Data Event Internal');
+                                $('c[r=A1] t', sheet).text( 'Data Partisipan');
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }
                         }

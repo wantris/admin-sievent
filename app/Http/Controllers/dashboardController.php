@@ -26,23 +26,13 @@ class dashboardController extends Controller
         $admin = Admin::all();
         $ps = Participant::all();
         $mhs = Pengguna::where('is_mahasiswa', 1)->get();
+        $dosens = Pengguna::where('is_dosen', 1)->get();
         $ei = EventInternal::all();
         $ee = EventEksternal::all();
         $pembina = Pembina::all();
         $tim = TimEvent::all();
         $eir = EventInternalRegistration::all();
         $eer = EventEksternalRegistration::all();
-
-        // Partcipant
-        $year = ['2016', '2017', '2018', '2019', '2020', '2021'];
-        $participants = [];
-        foreach ($year as $key => $value) {
-            $participants[] = Participant::where(DB::raw("DATE_FORMAT(created_at, '%Y')"), $value)->count();
-        }
-
-        $year = json_encode($year, JSON_NUMERIC_CHECK);
-
-        $participants = json_encode($participants, JSON_NUMERIC_CHECK);
 
 
         return view('dashboard', compact(
@@ -58,8 +48,7 @@ class dashboardController extends Controller
             'tim',
             'eir',
             'eer',
-            'year',
-            'participants'
+            'dosens',
         ));
     }
 }

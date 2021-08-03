@@ -6,6 +6,7 @@ use App\Http\Requests\PembinaStoreRequest;
 use App\Ormawa;
 use Illuminate\Http\Request;
 use App\Pembina;
+use App\Pengguna;
 use GuzzleHttp\Client;
 use Throwable;
 
@@ -21,7 +22,8 @@ class PembinaController extends Controller
             $pembina->dosenRef = null;
 
             // call API
-            $dosen = $this->getDosenSingle($pembina);
+            $api_dosen = new ApiDosenController;
+            $dosen = $api_dosen->getDosenByNidn($pembina->nidn);
 
             if ($dosen) {
                 $pembina->dosenRef = $dosen;
@@ -37,8 +39,12 @@ class PembinaController extends Controller
         $headerTitle = "Tambah Data Pembina";
 
         $ormawas = Ormawa::all();
-        $dosens = $this->getAllDosen();
 
+        // call API
+        $api_dosen = new ApiDosenController;
+        $dosens = $api_dosen->getAllDosen();
+
+        $dosens = $dosens;
 
         return view('pembina.add', compact('title', 'headerTitle', 'dosens', 'ormawas'));
     }
@@ -55,8 +61,12 @@ class PembinaController extends Controller
         if ($req->status == 1) {
             $pembinaSpec = Pembina::where('ormawa_id', $req->ormawa)->get();
             foreach ($pembinaSpec as $item) {
-                Pembina::where('id_pembina', $item->id_pembina)->where('periode', '<', $req->tahun)->update([
+                Pembina::where('id_pembina', $item->id_pembina)->update([
                     'status' => 0
+                ]);
+
+                Pengguna::where('nidn', $item->nidn)->update([
+                    'is_pembina' => 0
                 ]);
             }
         }
@@ -68,6 +78,11 @@ class PembinaController extends Controller
             $pembina->tahun_jabatan = $req->tahun;
             $pembina->status = $req->status;
             $pembina->save();
+
+            $pengguna = Pengguna::where('nidn', $req->nidn)->first();
+            $pengguna->is_pembina = 1;
+            $pengguna->save();
+
             return redirect()->route('pembina.index')->with('success', 'Data pembina berhasil ditambah');
         } catch (Throwable $e) {
             dd($e);
@@ -85,8 +100,11 @@ class PembinaController extends Controller
 
         if ($pembina) {
 
-            $dosen = $this->getDosenSingle($pembina);
-            $dosens = $this->getAllDosen();
+            // call API
+            $api_dosen = new ApiDosenController;
+            $dosens = $api_dosen->getAllDosen();
+            $dosen = $api_dosen->getDosenByNidn($pembina->nidn);
+            $dosens = $dosens;
 
             return view('pembina.edit', compact('title', 'headerTitle', 'pembina', 'id_pembina', 'dosen', 'dosens', 'ormawas'));
         }
@@ -136,43 +154,19 @@ class PembinaController extends Controller
 
     public function delete(Request $request, $id_pembina)
     {
+        $pembina = Pembina::find($id_pembina);
+        if ($pembina) {
+            $pengguna = Pengguna::where('nidn', $pembina->nidn)->first();
+            if ($pengguna) {
+                $pengguna->is_pembina = 0;
+                $pengguna->save();
+            }
+        }
+
         Pembina::destroy($id_pembina);
         return response()->json([
             "status" => 1,
             "message" => "pembina berhasil dihapus",
         ]);
-    }
-
-    public function getAllDosen()
-    {
-        try {
-            // call API
-            $client = new Client();
-            $url = env('SECOND_BACKEND_URL') . "dosen";
-            $response = $client->request('GET', $url, [
-                'verify'  => false,
-            ]);
-
-            $dosens = json_decode($response->getBody());
-
-            return $dosens;
-        } catch (\Throwable $err) {
-        }
-    }
-
-    public function getDosenSingle($pembina)
-    {
-        try {
-            // call API
-            $client = new Client();
-            $url = env('SECOND_BACKEND_URL') . "dosen/" . $pembina->nidn;
-            $response = $client->request('GET', $url, [
-                'verify'  => false,
-            ]);
-            $dosen = json_decode($response->getBody());
-
-            return $dosen;
-        } catch (\Throwable $err) {
-        }
     }
 }

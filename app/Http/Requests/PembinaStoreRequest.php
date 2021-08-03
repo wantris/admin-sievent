@@ -24,7 +24,7 @@ class PembinaStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nidn' => 'required|integer',
+            'nidn' => 'required',
             'ormawa' => 'required|integer',
             'status' => 'required|boolean',
         ];
@@ -33,7 +33,7 @@ class PembinaStoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'nidn.integer' => 'Pilih Dosen',
+            'nidn.required' => 'Pilih Dosen',
             'ormawa.integer' => 'Pilih Ormawa',
             'status.boolean' => 'Pilih status'
         ];

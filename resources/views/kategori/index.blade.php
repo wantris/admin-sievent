@@ -6,8 +6,7 @@
         <div class="card">
             <div class="card-body">
                 <a href="{{route('kategorievent.add')}}" class="btn btn-primary mb-3">Tambah Kategori Event</a>
-                <div class="">
-                    <table class="table table-bordered table-md" id="table-admin">
+                    <table class="table table-bordered table-md" id="table-admin" style="width: 100%">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -18,19 +17,18 @@
                         <tbody>
                             @foreach ($kategoris as $kategori)
                             <tr id="tr_{{$kategori->id_kategori}}">
-                                <td>{{$loop->iteration}}</td>
+                                <td width="10%">{{$loop->iteration}}</td>
                                 <td>{{$kategori->nama_kategori}}</td>
                                 <td>
                                     <a href="{{route('kategorievent.edit', $kategori->id_kategori)}}"
-                                        class="btn btn-secondary d-inline">Edit</a>
+                                        class="btn btn-secondary d-inline" title="Edit"><i class="fas fa-pen-square"></i></a>
                                     <a href="#" onclick="deleteKategori({{$kategori->id_kategori}})"
-                                        class="btn btn-danger d-inline">Hapus</a>
+                                        class="btn btn-danger d-inline" title="Hapus"><i class="fas fa-trash-alt"></i></a>
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
-                </div>
             </div>
         </div>
     </div>
@@ -46,7 +44,11 @@
     });
     
     $(document).ready(function () {
-        $('#table-admin').DataTable();
+        var $dTable = $('#table-admin').DataTable({
+            responsive:"true"
+        });
+
+        new $.fn.dataTable.FixedHeader( $dTable );
     });
 
     const deleteKategori = (id_kategori) => {

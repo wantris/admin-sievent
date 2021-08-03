@@ -5,9 +5,9 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <a href="{{route('tipepeserta.add')}}" class="btn btn-primary mb-3">Tambah Tipe Peserta</a>
+                <a href="{{route('tipepeserta.add')}}" class="btn btn-primary mb-4">Tambah Tipe Peserta</a>
                 <div class="">
-                    <table class="table table-bordered table-md" id="table-admin">
+                    <table class="table table-bordered table-md" id="table-admin" style="width: 100%">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -18,13 +18,13 @@
                         <tbody>
                             @foreach ($tps as $tp)
                             <tr id="tr_{{$tp->id_tipe_peserta}}">
-                                <td>{{$loop->iteration}}</td>
+                                <td width="5%">{{$loop->iteration}}</td>
                                 <td>{{$tp->nama_tipe}}</td>
                                 <td>
                                     <a href="{{route('tipepeserta.edit', $tp->id_tipe_peserta)}}"
-                                        class="btn btn-secondary d-inline">Edit</a>
+                                        class="btn btn-secondary d-inline-block mb-1" title="Edit"><i class="fas fa-pen-square"></i></a>
                                     <a href="#" onclick="deleteTipe({{$tp->id_tipe_peserta}})"
-                                        class="btn btn-danger d-inline">Hapus</a>
+                                        class="btn btn-danger d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
                                 </td>
                             </tr>
                             @endforeach
@@ -45,7 +45,11 @@
         }
     });
     $(document).ready(function () {
-      $('#table-admin').DataTable();
+        var $dTable = $('#table-admin').DataTable({
+            responsive:"true"
+        });
+
+        new $.fn.dataTable.FixedHeader( $dTable );
     });
 
     const deleteTipe = (id) => {

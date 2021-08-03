@@ -5,7 +5,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <a href="{{route('eventeksternal.add')}}" class="btn btn-primary mb-3">Tambah Event Eksternal</a>
+                <a href="{{route('eventeksternal.add')}}" class="btn btn-primary mb-4">Tambah Event Eksternal</a>
                 <div class="row mb-4">
                     <div class="col-lg-3 col-12">
                         <select class="form-control" id="kategori-filter">
@@ -32,79 +32,67 @@
                         </select>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-md" id="table-admin">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Event</th>
-                                <th>Nama Ormawa</th>
-                                <th>Tipe Peserta</th>
-                                <th>Kategori</th>
-                                <th>Role</th>
-                                <th>Tanggal Buka</th>
-                                <th>Tanggal Tutup</th>
-                                <th>Status</th>
-                                <th>Created at</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($events as $event)
-                            <tr id="tr_{{$event->id_event_eksternal}}">
-                                <td>{{$loop->iteration}}</td>
-                                <td>{{$event->nama_event}}</td>
-                                <td>{{$event->cakupan_ormawa_ref->role}}</td>
-                                <td>{{$event->tipe_peserta_ref->nama_tipe}}</td>
-                                <td>{{$event->kategori_ref->nama_kategori}}</td>
-                                <td>{{$event->role}}</td>
-                                <td>
-                                    @php
-                                    $tglbuka = Carbon\Carbon::parse($event->tgl_buka)->toDatetime()->format('d, M
-                                    Y');
-                                    @endphp
-                                    {{$tglbuka}}
-                                </td>
-                                <td>
-                                    @php
-                                    $tgltutup = Carbon\Carbon::parse($event->tgl_tutup)->toDatetime()->format('d, M
-                                    Y');
-                                    @endphp
-                                    {{$tgltutup}}
-                                </td>
-                                <td>
-                                    @if ($event->status == 1)
-                                    <span class="badge badge-pill badge-success">Terverifikasi</span>
-                                    @else
-                                    <span class="badge badge-pill badge-danger">Invalid</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    {{ date("d/m/Y", strtotime($event->created_at)) }}
-                                </td>
-                                <td>
-                                    <div class="d-block mb-2">
-                                        <a href="{{route('eventeksternal.edit', $event->id_event_eksternal)}}"
-                                            class="btn btn-secondary mb-2 mt-2 d-inline" title="Edit"><i
-                                                class="far fa-edit"></i></a>
-                                    </div>
-                                    <div class="d-block mb-2">
-                                        <a onclick="deleteEvent({{$event->id_event_eksternal}})" href="#"
-                                            class="btn btn-danger mb-2 mt-2 d-inline" title="Hapus"><i
-                                                class="fas fa-trash"></i></a>
-
-                                    </div>
-                                    <div class="d-block">
-                                        <a href="{{route('eventeksternal.pengajuan', $event->id_event_eksternal)}}"
-                                            class="btn btn-primary mb-2 mt-2 d-inline" title="Lihat Pengajuan"><i
-                                                class="fas fa-book-open"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                <table class="table table-bordered table-md" id="table-admin" style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Event</th>
+                            <th>Nama Ormawa</th>
+                            <th>Tipe Peserta</th>
+                            <th>Kategori</th>
+                            <th>Role</th>
+                            <th>Tanggal Buka</th>
+                            <th>Tanggal Tutup</th>
+                            <th>Status</th>
+                            <th>Created at</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($events as $event)
+                        <tr id="tr_{{$event->id_event_eksternal}}">
+                            <td width="5%">{{$loop->iteration}}</td>
+                            <td width="25%">{{$event->nama_event}}</td>
+                            <td width="20%">{{$event->cakupan_ormawa_ref->role}}</td>
+                            <td>{{$event->tipe_peserta_ref->nama_tipe}}</td>
+                            <td>{{$event->kategori_ref->nama_kategori}}</td>
+                            <td>{{$event->role}}</td>
+                            <td>
+                                @php
+                                $tglbuka = Carbon\Carbon::parse($event->tgl_buka)->toDatetime()->format('d, M
+                                Y');
+                                @endphp
+                                {{$tglbuka}}
+                            </td>
+                            <td>
+                                @php
+                                $tgltutup = Carbon\Carbon::parse($event->tgl_tutup)->toDatetime()->format('d, M
+                                Y');
+                                @endphp
+                                {{$tgltutup}}
+                            </td>
+                            <td>
+                                @if ($event->status == 1)
+                                <span class="badge badge-pill badge-success">Terverifikasi</span>
+                                @else
+                                <span class="badge badge-pill badge-danger">Invalid</span>
+                                @endif
+                            </td>
+                            <td>
+                                {{ date("d/m/Y", strtotime($event->created_at)) }}
+                            </td>
+                            <td width="40%">
+                                <a href="{{route('eventeksternal.edit', $event->id_event_eksternal)}}"
+                                    class="btn btn-secondary d-inline-block mb-1" title="Edit"><i class="fas fa-pen-square"></i></a>
+                                <a onclick="deleteEvent({{$event->id_event_eksternal}})" href="#"
+                                    class="btn btn-danger d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
+                                <a href="{{route('eventeksternal.pengajuan', $event->id_event_eksternal)}}"
+                                    class="btn btn-primary d-inline-block mb-1" title="Lihat Pengajuan"><i class="fas fa-book-open"></i></a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -156,6 +144,7 @@
 
     $(document).ready(function () {
         var $dTable = $('#table-admin').DataTable({
+            responsive:"true",
             "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
                         "<'row'<'col-sm-5'i><'col-sm-7'p>>",
@@ -181,6 +170,8 @@
                     }
                 ],
         });
+
+        new $.fn.dataTable.FixedHeader( $dTable );
 
         let status = '';
         let kategori = '';

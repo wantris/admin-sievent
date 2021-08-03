@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use GuzzleHttp\Client;
+use App\Http\Controllers\ApiDosenController;
 use App\Pengguna;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,27 +15,25 @@ class dosenPenggunaSeeder extends Seeder
      */
     public function run()
     {
-        $client = new Client();
-        $url = env('SECOND_BACKEND_URL') . "dosen";
-        $response = $client->request('GET', $url, [
-            'verify'  => false,
-        ]);
-        $dosens = json_decode($response->getBody());
+        $api_dosen = new ApiDosenController;
 
-        foreach ($dosens as $dosen) {
-            $check = Pengguna::where('nidn', $dosen->nidn)->first();
-            echo $dosen->nidn;
-            if (!$check) {
-                $ps = new Pengguna();
-                $ps->username = $dosen->nidn;
-                $ps->password = Hash::make('@Polindra123');
-                $ps->is_mahasiswa = 0;
-                $ps->is_wadir3 = 0;
-                $ps->is_pembina = 0;
-                $ps->is_participant = 0;
-                $ps->is_dosen = 1;
-                $ps->nidn = $dosen->nidn;
-                $ps->save();
+        $dosens = $api_dosen->getAllDosen();
+
+        if (count($dosens) > 0) {
+            foreach ($dosens as $dosen) {
+                $check = Pengguna::where('nidn', $dosen->dosen_nidn)->first();
+                if (!$check) {
+                    $ps = new Pengguna();
+                    $ps->username = $dosen->dosen_nidn;
+                    $ps->password = Hash::make('@Polindra123');
+                    $ps->is_mahasiswa = 0;
+                    $ps->is_wadir3 = 0;
+                    $ps->is_pembina = 0;
+                    $ps->is_participant = 0;
+                    $ps->is_dosen = 1;
+                    $ps->nidn = $dosen->dosen_nidn;
+                    $ps->save();
+                }
             }
         }
     }

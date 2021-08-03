@@ -5,51 +5,48 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <a href="{{route('pembina.add')}}" class="btn btn-primary mb-3">Tambah Pembina</a>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-md" id="table-admin">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Dosen</th>
-                                <th>Ormawa</th>
-                                <th>Tahun Jabatan</th>
-                                <th>Status</th>
-                                <th>Created At</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($pembinas as $pembina)
-                            <tr id="tr_{{$pembina->id_pembina}}">
-                                <td>{{$loop->iteration}}</td>
-                                <td>
-                                    @if ($pembina->dosenRef)
-                                        {{$pembina->dosenRef->nama_dosen}}
-                                    @endif
-                                </td>
-                                <td>{{$pembina->ormawaRef->nama_ormawa}}</td>
-                                <td>{{$pembina->tahun_jabatan}}</td>
-                                <td>
-                                    @if ($pembina->status == "1")
-                                    <button disabled="disabled" class="btn btn-primary">Aktif</button>
-                                    @else
-                                    <button disabled="disabled" class="btn btn-danger">Tidak Aktif</button>
-                                    @endif
-                                </td>
-                                <td>{{$pembina->created_at->isoFormat('D MMMM Y')}}</td>
-                                <td>
-                                    <a href="{{route('pembina.edit', $pembina->id_pembina)}}"
-                                        class="btn btn-secondary d-inline">Edit</a>
-                                    <a href="#" onclick="deletePembina({{$pembina->id_pembina}})"
-                                        class="btn btn-danger mt-2 d-inline">Hapus</a>
-                                </td>
-                            </tr>
-                            @endforeach
-
-                        </tbody>
-                    </table>
-                </div>
+                <a href="{{route('pembina.add')}}" class="btn btn-primary mb-4">Tambah Pembina</a>
+                <table class="table table-bordered table-md" id="table-admin" style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Dosen</th>
+                            <th>Ormawa</th>
+                            <th>Tahun Jabatan</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($pembinas as $pembina)
+                        <tr id="tr_{{$pembina->id_pembina}}">
+                            <td>{{$loop->iteration}}</td>
+                            <td>
+                                @if ($pembina->dosenRef)
+                                    {{$pembina->dosenRef->dosen_nama}}
+                                @endif
+                            </td>
+                            <td>{{$pembina->ormawaRef->nama_ormawa}}</td>
+                            <td>{{$pembina->tahun_jabatan}}</td>
+                            <td>
+                                @if ($pembina->status == "1")
+                                <button disabled="disabled" class="btn btn-primary">Aktif</button>
+                                @else
+                                <button disabled="disabled" class="btn btn-danger">Tidak Aktif</button>
+                                @endif
+                            </td>
+                            <td>{{$pembina->created_at->isoFormat('D MMMM Y')}}</td>
+                            <td>
+                                <a href="{{route('pembina.edit', $pembina->id_pembina)}}"
+                                    class="btn btn-secondary d-inline-block mb-1" title="Edit"><i class="fas fa-pen-square"></i></a>
+                                <a href="#" onclick="deletePembina({{$pembina->id_pembina}})"
+                                    class="btn btn-danger d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -59,7 +56,11 @@
 @push('script')
 <script>
     $(document).ready(function () {
-      $('#table-admin').DataTable();
+        var $dTable = $('#table-admin').DataTable({
+            responsive:"true"
+        });
+
+        new $.fn.dataTable.FixedHeader( $dTable );
     });
 
     $.ajaxSetup({

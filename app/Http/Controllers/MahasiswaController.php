@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Pengguna;
 use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\ApiMahasiswaController;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 
@@ -14,27 +15,16 @@ class MahasiswaController extends Controller
         $title = "Akun Mahasiswa";
         $headerTitle = "Data Akun Mahasiswa";
 
-        $mahasiswas = Pengguna::where('is_mahasiswa', 1)->get();
+        $mahasiswas = $this->getAllData();
+        $api_mhs = new ApiMahasiswaController;
 
-        foreach ($mahasiswas as $mahasiswa) {
-
-            // call API
-            $client = new Client();
-            $url = "http://localhost:7000/mahasiswa/detail/" . $mahasiswa->nim;
-            $response = $client->request('GET', $url, [
-                'verify'  => false,
-            ]);
-            $mhs = json_decode($response->getBody());
-
-            if ($mhs) {
-                $mahasiswa->nama_mahasiswa = $mhs->nama;
-            }
-        }
         return view('akun_mahasiswa.index', compact('title', 'headerTitle', 'mahasiswas'));
     }
 
     public function runSeeder()
     {
+        set_time_limit(0);
+
         Artisan::call("db:seed", ['--class' => 'mahasiswaPenggunaSeeder']);
 
         return redirect()->route('mahasiswa.index')->with('success', 'Akun mahasiswa berhasil di perbarui');
@@ -138,5 +128,27 @@ class MahasiswaController extends Controller
             "status" => 1,
             "message" => $nim,
         ]);
+    }
+
+    public function getAllData()
+    {
+        $mahasiswas = collect();
+
+        try {
+            $client = new Client();
+            $urlP = env('BACKEND_URL') . "pengguna/mahasiswa";
+
+            $responseP = $client->request('GET', $urlP, [
+                'verify'  => false,
+            ]);
+
+            $mahasiswas = json_decode($responseP->getBody());
+
+            $new_data = $mahasiswas->data;
+
+            return $new_data;
+        } catch (\Throwable $err) {
+            return $mahasiswas;
+        }
     }
 }

@@ -33,6 +33,7 @@ class adminController extends Controller
         $admin->nama = $req->nama;
         $admin->username = $req->username;
         $admin->password = Hash::make($req->password);
+        $admin->email = $req->email;
         $admin->save();
 
         return redirect()->route('admin.index')->with('success', 'Data admin berhasil disimpan');

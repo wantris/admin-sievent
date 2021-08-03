@@ -5,29 +5,38 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
-                <div class="row">
-                    <div class="col-12 text-right">
-                        <a href="{{route('participant.index')}}" class="btn btn-primary">Kembali</a>
-                    </div>
-                </div>
-                <form action="{{route('participant.update', $ps->id_participant)}}" enctype="multipart/form-data"
+                <form action="{{route('mahasiswa.update', $dosen->nidn)}}" enctype="multipart/form-data"
                     method="post">
                     @csrf
                     @method('patch')
                     <div class="form-group">
-                        <label>Nama Participant</label>
+                        <label>Nama Dosen</label>
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <div class="input-group-text">
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <input type="text" value="{{$ps->nama_participant}}" required name="nama"
-                                class="form-control phone-number">
+                            @if ($dosen->dosenRef)
+                                <input type="text" value="{{$dosen->dosenRef->dosen_lengkap_nama}}" disabled class="form-control phone-number">
+                            @else
+                                <input type="text" value="" disabled class="form-control phone-number">
+                            @endif
                         </div>
                         @if ($errors->has('nama'))
                         <span class="text-danger">{{ $errors->first('nama') }}</span>
                         @endif
+                    </div>
+                    <div class="form-group">
+                        <label>NIDN</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    <i class="fas fa-signature"></i>
+                                </div>
+                            </div>
+                            <input type="text" value="{{$dosen->nidn}}" disabled class="form-control phone-number">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Username</label>
@@ -37,7 +46,7 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <input type="text" required value="{{$ps->pengguna_ref->username}}" name="username"
+                            <input type="text" required value="{{$dosen->username}}" name="username"
                                 class="form-control phone-number">
                         </div>
                         @if ($errors->has('username'))
@@ -52,9 +61,9 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <input type="text" name="password" class="form-control phone-number">
-                            <input type="hidden" name="oldPassword" value="{{$ps->pengguna_ref->password}}">
-                            <input type="hidden" name="oldPhoto" value="{{$ps->pengguna_ref->photo}}">
+                            <input type="text" name="newPassword" class="form-control phone-number">
+                            <input type="hidden" name="oldPassword" value="{{$dosen->password}}">
+                            <input type="hidden" name="oldPhoto" value="{{$dosen->photo}}">
                         </div>
                         @if ($errors->has('password'))
                         <span class="text-danger">{{ $errors->first('password') }}</span>
@@ -68,7 +77,7 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <input type="text" value="{{$ps->pengguna_ref->email}}" required name="email"
+                            <input type="text" value="{{$dosen->email}}" name="email"
                                 class="form-control phone-number">
                         </div>
                         @if ($errors->has('email'))
@@ -83,7 +92,7 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <input type="text" name="phone" value="{{$ps->pengguna_ref->phone}}"
+                            <input type="text" name="phone" value="{{$dosen->phone}}"
                                 class="form-control phone-number">
                         </div>
                         @if ($errors->has('phone'))
@@ -99,7 +108,7 @@
                                 </div>
                             </div>
                             <textarea name="alamat" class="form-control" id="" cols="30"
-                                rows="10">{{$ps->pengguna_ref->alamat}}</textarea>
+                                rows="10">{{$dosen->alamat}}</textarea>
                         </div>
                         @if ($errors->has('alamat'))
                         <span class="text-danger">{{ $errors->first('alamat') }}</span>
@@ -113,7 +122,8 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <input type="file" name="photo" id="" class="form-control">
+                            <input type="file" accept="image/*" onchange="loadPhoto(event)" name="photo" id=""
+                                class="form-control">
                         </div>
                         @if ($errors->has('photo'))
                         <span class="text-danger">{{ $errors->first('photo') }}</span>
@@ -127,8 +137,9 @@
     <div class="col-lg-4 col-12">
         <div class="card">
             <div class="card-body">
-                @if ($ps->pengguna_ref->photo)
-                    <img id="photo-image" src="{{ $ps->pengguna_ref->photo_image_url }}" style="width:100%" alt="">
+                @if ($dosen->photo)
+                    <img id="photo-image" src="{{ $dosen->photo_image_url}}"
+                        style="width:100%" alt="">
                 @else
                     <img src="{{asset('assets/icons/pengguna_icon2.png')}}" alt="">
                 @endif
@@ -140,6 +151,12 @@
 
 @push('script')
 <script>
-
+    var loadPhoto = function(event) {
+        var outputPhoto = document.getElementById('photo-image');
+        outputPhoto.src = URL.createObjectURL(event.target.files[0]);
+        outputPhoto.onload = function() {
+        URL.revokeObjectURL(outputPhoto.src) // free memory
+        }
+    };
 </script>
 @endpush

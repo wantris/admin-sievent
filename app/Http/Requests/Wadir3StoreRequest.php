@@ -24,7 +24,7 @@ class Wadir3StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nidn' => 'required|integer',
+            'nidn' => 'required',
             'status' => 'required|boolean',
         ];
     }
@@ -32,7 +32,7 @@ class Wadir3StoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'nidn.integer' => 'Pilih Dosen!',
+            'nidn.required' => 'Pilih Dosen!',
             'status.boolean' => 'Pilih status!'
         ];
     }

@@ -5,6 +5,7 @@ use Illuminate\Database\Seeder;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\ApiMahasiswaController;
 
 class mahasiswaPenggunaSeeder extends Seeder
 {
@@ -15,27 +16,29 @@ class mahasiswaPenggunaSeeder extends Seeder
      */
     public function run()
     {
-        $client = new Client();
-        $url = env('SECOND_BACKEND_URL') . "mahasiswa";
-        $response = $client->request('GET', $url, [
-            'verify'  => false,
-        ]);
-        $mahasiswas = json_decode($response->getBody());
+        $api_mahasiswa = new ApiMahasiswaController;
+        $mahasiswas = $api_mahasiswa->getAllMahasiswa();
 
-        foreach ($mahasiswas as $mhs) {
-            $check = Pengguna::where('nim', $mhs->nim)->first();
-            echo $mhs->nim;
-            if (!$check) {
-                $ps = new Pengguna();
-                $ps->username = $mhs->nim;
-                $ps->password = Hash::make('@Polindra123');
-                $ps->is_mahasiswa = 1;
-                $ps->is_wadir3 = 0;
-                $ps->is_pembina = 0;
-                $ps->is_participant = 0;
-                $ps->is_dosen = 0;
-                $ps->nim = $mhs->nim;
-                $ps->save();
+        foreach ($mahasiswas as $key =>  $mhs) {
+            if ($key < 50) {
+                $check = Pengguna::select(['nim'])->where('nim', $mhs->mahasiswa_nim)->first();
+                if (!$check) {
+                    $data = [
+                        'username' => $mhs->mahasiswa_nim,
+                        'username' => $mhs->mahasiswa_nim,
+                        'password' => Hash::make('@Polindra123'),
+                        'is_mahasiswa' => 1,
+                        'is_wadir3' => 0,
+                        'is_pembina' => 0,
+                        'is_participant' => 0,
+                        'is_dosen' => 0,
+                        'nim' => $mhs->mahasiswa_nim,
+                    ];
+
+                    Pengguna::create($data);
+                }
+            } else {
+                break;
             }
         }
     }

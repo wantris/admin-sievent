@@ -5,95 +5,63 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <a href="{{route('eventinternal.add')}}" class="btn btn-primary mb-4">Tambah Event Internal</a>
-                <div class="row mb-5">
-                    <div class="col-lg-3 col-12">
-                        <select class="form-control" id="kategori-filter">
-                            <option selected value="">Filter Kategori</option>
-                            @foreach ($kategoris as $kategori)
-                            <option value="{{$kategori->nama_kategori}}">{{$kategori->nama_kategori}}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-lg-3 col-12">
-                        <select class="form-control" id="status-filter">
-                            <option value="">Pilih Status</option>
-                            <option value="Terverifikasi">Terverifikasi</option>
-                            <option value="Invalid">Invalid</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-3 col-12">
-                        <select class="form-control" id="ormawa-filter">
-                            <option value="">Pilih Ormawa</option>
-                            @foreach ($ormawas as $ormawa)
-                                <option value="{{$ormawa->nama_ormawa}}">{{$ormawa->nama_ormawa}}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+                <a href="{{route('dosen.add')}}" class="btn btn-primary mb-3">Tambah Akun Mahasiswa</a>
                 <table class="table table-bordered table-md" id="table-admin" style="width: 100%">
                     <thead>
-                        <tr>
-                            <th >No</th>
-                            <th>Nama Event</th>
-                            <th>Nama Ormawa</th>
-                            <th>Tipe Peserta</th>
-                            <th>Kategori</th>
-                            <th>Role</th>
-                            <th>Tanggal Buka</th>
-                            <th>Tanggal Tutup</th>
-                            <th>Status</th>
-                            <th>Created at</th>
+                        <tr id="">
+                            <th>No</th>
+                            <th>Nama Dosen</th>
+                            <th>NIDN</th>
+                            <th>Program Studi</th>
+                            <th>Nomor Telepon</th>
+                            <th>Email</th>
+                            <th>Photo</th>
+                            <th>Created At</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($events as $event)
-                        <tr id="tr_{{$event->id_event_internal}}">
+                        @foreach ($dosens as $dosen)
+                        <tr id="tr_{{$dosen->nim}}">
                             <td width="5%">{{$loop->iteration}}</td>
-                            <td width="20%">{{$event->nama_event}}</td>
-                            <td width="25%">{{$event->ormawa_ref->nama_ormawa}}</td>
-                            <td>{{$event->tipe_peserta_ref->nama_tipe}}</td>
-                            <td>{{$event->kategori_ref->nama_kategori}}</td>
-                            <td>{{$event->role}}</td>
                             <td>
-                                @php
-                                $tglbuka = Carbon\Carbon::parse($event->tgl_buka)->toDatetime()->format('d, M
-                                Y');
-                                @endphp
-                                {{$tglbuka}}
+                                @if ($dosen->dosenRef)
+                                    {{$dosen->dosenRef->dosen_lengkap_nama}}
+                                @endif
                             </td>
+                            <td>{{$dosen->nidn}}</td>
                             <td>
-                                @php
-                                $tgltutup = Carbon\Carbon::parse($event->tgl_tutup)->toDatetime()->format('d, M
-                                Y');
-                                @endphp
-                                {{$tgltutup}}
-                            </td>
-                            <td>
-                                @if ($event->status == 1)
-                                <span class="badge badge-pill badge-success">Terverifikasi</span>
-                                @else
-                                <span class="badge badge-pill badge-danger">Invalid</span>
+                                @if ($dosen->dosenRef)
+                                    {{$dosen->dosenRef->program_studi_nama}}
                                 @endif
                             </td>
                             <td>
-                                {{ date("d/m/Y", strtotime($event->created_at)) }}
+                                {{$dosen->phone}}
                             </td>
-                            <td width="40%">
-                                    <a href="{{route('eventinternal.edit', $event->id_event_internal)}}"
-                                        class="btn btn-secondary d-inline-block mb-1" title="Edit"><i class="fas fa-pen-square"></i></a>
-                                    <a onclick="deleteEvent({{$event->id_event_internal}})" href="#"
-                                        class="btn btn-danger d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
-                                    <a href="{{route('eventinternal.pengajuan', $event->id_event_internal)}}"
-                                        class="btn btn-primary d-inline-block mb-1" title="Lihat Pengajuan"><i class="fas fa-book-open"></i></a>
+                            <td>
+                                {{$dosen->email}}
+                            </td>
+                            <td>
+                                @if ($dosen->photo)
+                                <img src="{{$dosen->photo_image_url}}"
+                                    style="width: 50px; height:50px" alt="">
+                                @else
+                                <img style="width: 50px; height:50px"
+                                    src="{{asset('assets/icons/pengguna_icon2.png')}}" alt="">
+                                @endif
+                            </td>
+                            <td>{{ date("d/m/Y", strtotime($dosen->created_at)) }}</td>
+                            <td>
+                                <a href="{{route('dosen.edit', $dosen->nidn)}}"
+                                    class="btn btn-secondary d-inline-block mb-1" title="Edit"><i class="fas fa-pen-square"></i></a>
+                                <a href="#" onclick="deleteMahasiswa({{$dosen->nidn}})"
+                                    class="btn btn-danger mt-2 d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
-        </div>
+            </div>
         </div>
     </div>
 </div>
@@ -110,8 +78,7 @@
     var DateFilterFunction = (function (oSettings, aData, iDataIndex) {
         var dateStart = parseDateValue(start_date);
         var dateEnd = parseDateValue(end_date);
-        var evalDate= parseDateValue(aData[9]);
-        console.log(aData[9]);
+        var evalDate= parseDateValue(aData[7]);
        
         if ( ( isNaN( dateStart ) && isNaN( dateEnd ) ) ||
             ( isNaN( dateStart ) && evalDate <= dateEnd ) ||
@@ -144,8 +111,9 @@
     }
 
     $(document).ready(function () {
+        $.fn.dataTable.ext.classes.sPageButton = 'button button-primary';
         var $dTable = $('#table-admin').DataTable({
-            responsive:"true",
+            responsive: true,
             "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
                         "<'row'<'col-sm-5'i><'col-sm-7'p>>",
@@ -154,22 +122,23 @@
                     {
                         extend: 'excelHtml5',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                            columns: [ 1, 2, 3, 4, 5]
                         },
                         customize: function ( xlsx ) {
                             var sheet = xlsx.xl.worksheets['sheet1.xml'];
                             if(start_date != null && end_date != null){
                                 convertStart(String(start_date));
                                 convertEnd(String(end_date));
-                                $('c[r=A1] t', sheet).text( 'Data Event Internal '+ start_month + " - "+ end_month);
+                                $('c[r=A1] t', sheet).text( 'Data Pengguna Dosen '+ start_month + " - "+ end_month);
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }else{
-                                $('c[r=A1] t', sheet).text( 'Data Event Internal');
+                                $('c[r=A1] t', sheet).text( 'Data Pengguna Dosen');
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }
                         }
                     }
                 ],
+                pagingType: "full_numbers",
         });
 
         new $.fn.dataTable.FixedHeader( $dTable );
@@ -179,21 +148,16 @@
 
         $('#status-filter').on('change', function(){
             status = this.value;
-            $dTable.column(8).search(status).draw();   
+            $dTable.column(4).search(kategori).column(8).search(status).draw();   
         });
 
         $('#kategori-filter').on('change', function(){
             kategori = this.value;
-            $dTable.column(4).search(kategori).draw();  
-        });
-
-        $('#ormawa-filter').on('change', function(){
-            ormawa = this.value;
-            $dTable.column(2).search(ormawa).draw();  
+            $dTable.column(4).search(kategori).column(8).search(status).draw();  
         });
 
         //menambahkan daterangepicker di dalam datatables
-        $("div.datesearchbox").html('<div class="input-group mb-3"> <div class="input-group-addon"> <i class="glyphicon glyphicon-calendar"></i> </div><input type="text" class="form-control pull-right" id="datesearch" placeholder="Search by date range.."> </div>');
+        $("div.datesearchbox").html('<div class="input-group mb-3"> <div class="input-group-addon"> <i class="glyphicon glyphicon-calendar"></i> </div><input type="text" class="form-control pull-right" id="datesearch" placeholder="Berdasarkan Tanggal.."> </div>');
 
         document.getElementsByClassName("datesearchbox")[0].style.textAlign = "right";
 
@@ -218,24 +182,6 @@
             $.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(DateFilterFunction, 1));
             $dTable.draw();
         });
-
-        
-
-    //   $('#table-admin').DataTable( {
-    //     dom: 'Bfrtip',
-    //     buttons: [
-    //         'colvis','csv', 'excel', 'pdf'
-    //     ],
-    //     scrollY:        "300px",
-    //     scrollX:        true,
-    //     scrollCollapse: true,
-    //     paging:         false,
-    //     columnDefs: [
-    //         { width: '60%', targets: 9 },
-    //         { width: '60%', targets: 2 }
-    //     ],
-    //     fixedColumns: true
-    // });
     });
 
     $.ajaxSetup({
@@ -244,11 +190,12 @@
         }
     });
 
-    const deleteEvent = (id_eventinternal) => {
-        let url = "/eventinternal/delete/"+id_eventinternal;
+    const deleteMahasiswa = (nim) => {
+        console.log(nim);
+        let url = "/mahasiswa/delete/"+nim;
         event.preventDefault();
         Notiflix.Confirm.Show( 
-            'Event Internal',
+            'Mahasiswa',
             'Apakah anda yakin ingin menghapus?',
             'Yes',
             'No',
@@ -259,13 +206,13 @@
                         type: 'delete', 
                         dataType: "JSON",
                         data: {
-                            "id_eventinternal": id_eventinternal
+                            "nim": nim 
                         },
                         success: function (response){
                             console.log(response.status); 
                             if(response.status == 1){
                                 Notiflix.Notify.Success(response.message);
-                                $('#tr_' + id_eventinternal).remove();
+                                $('#tr_' + nim).remove();
                             }
                         },
                         error: function(xhr) {
@@ -277,7 +224,5 @@
                  // No button callback alert('If you say so...'); 
             } ); 
     }
-
-
 </script>
 @endpush

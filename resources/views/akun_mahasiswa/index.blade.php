@@ -6,57 +6,63 @@
         <div class="card">
             <div class="card-body">
                 <a href="{{route('mahasiswa.add')}}" class="btn btn-primary mb-3">Tambah Akun Mahasiswa</a>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-md" id="table-admin">
-                        <thead>
-                            <tr id="">
-                                <th>No</th>
-                                <th>Nama Mahasiswa</th>
-                                <th>NIM</th>
-                                <th>Nomor Telepon</th>
-                                <th>Email</th>
-                                <th>Photo</th>
-                                <th>Created At</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($mahasiswas as $mahasiswa)
-                            <tr id="tr_{{$mahasiswa->nim}}">
-                                <td>{{$loop->iteration}}</td>
-                                <td>{{$mahasiswa->nama_mahasiswa}}</td>
-                                <td>{{$mahasiswa->nim}}</td>
-                                <td>@if ($mahasiswa->phone)
-                                    {{$mahasiswa->phone}}
-                                    @endif
-
-                                </td>
-                                <td>@if ($mahasiswa->email)
-                                    {{$mahasiswa->email}}
-                                    @endif
-                                </td>
-                                <td>
-                                    @if ($mahasiswa->photo)
-                                    <img src="{{ env('BACKEND_ASSET_URL') . "assets/img/photo-pengguna/".$mahasiswa->photo}}"
-                                        style="width: 50px; height:50px" alt="">
-                                    @else
-                                    <img style="width: 50px; height:50px"
-                                        src="{{asset('assets/icons/participant_icon.png')}}" alt="">
-                                    @endif
-                                </td>
-                                <td>{{ date("d/m/Y", strtotime($mahasiswa->created_at)) }}</td>
-                                <td>
-                                    <a href="{{route('mahasiswa.edit', $mahasiswa->nim)}}"
-                                        class="btn btn-secondary d-inline">Edit</a>
-                                    <a href="#" onclick="deleteMahasiswa({{$mahasiswa->nim}})"
-                                        class="btn btn-danger mt-2 d-inline">Hapus</a>
-                                </td>
-                            </tr>
-                            @endforeach
-
-                        </tbody>
-                    </table>
-                </div>
+                <table class="table table-bordered table-md" id="table-admin" style="width: 100%">
+                    <thead>
+                        <tr id="">
+                            <th>No</th>
+                            <th>Nama Mahasiswa</th>
+                            <th>NIM</th>
+                            <th>Kelas</th>
+                            <th>Nomor Telepon</th>
+                            <th>Email</th>
+                            <th>Photo</th>
+                            <th>Created At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($mahasiswas as $mahasiswa)
+                        <tr id="tr_{{$mahasiswa->nim}}">
+                            <td width="5%">{{$loop->iteration}}</td>
+                            <td>
+                                @if ($mahasiswa->mahasiswaRef)
+                                    {{$mahasiswa->mahasiswaRef->mahasiswa_nama}}
+                                @else
+                                    {{$mahasiswa->username}}
+                                @endif
+                            </td>
+                            <td>{{$mahasiswa->nim}}</td>
+                            <td>
+                                @if ($mahasiswa->mahasiswaRef)
+                                    {{$mahasiswa->mahasiswaRef->kelas_kode}}
+                                @endif
+                            </td>
+                            <td>
+                                {{$mahasiswa->phone}}
+                            </td>
+                            <td>
+                                {{$mahasiswa->email}}
+                            </td>
+                            <td>
+                                @if ($mahasiswa->photo)
+                                <img src="{{$mahasiswa->photo_image_url}}"
+                                    style="width: 50px; height:50px" alt="">
+                                @else
+                                <img style="width: 50px; height:50px"
+                                    src="{{asset('assets/icons/pengguna_icon2.png')}}" alt="">
+                                @endif
+                            </td>
+                            <td>{{ date("d/m/Y", strtotime($mahasiswa->created_at)) }}</td>
+                            <td>
+                                <a href="{{route('mahasiswa.edit', $mahasiswa->nim)}}"
+                                    class="btn btn-secondary d-inline mb-3" title="Edit"><i class="fas fa-pen-square"></i></a>
+                                <a href="#" onclick="deleteMahasiswa({{$mahasiswa->nim}})"
+                                    class="btn btn-danger mt-2 d-inline mb-3" title="Hapus"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -108,6 +114,7 @@
 
     $(document).ready(function () {
         var $dTable = $('#table-admin').DataTable({
+            responsive: true,
             "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
                         "<'row'<'col-sm-5'i><'col-sm-7'p>>",
@@ -123,10 +130,10 @@
                             if(start_date != null && end_date != null){
                                 convertStart(String(start_date));
                                 convertEnd(String(end_date));
-                                $('c[r=A1] t', sheet).text( 'Data Event Internal '+ start_month + " - "+ end_month);
+                                $('c[r=A1] t', sheet).text( 'Data Pengguna Mahasiswa '+ start_month + " - "+ end_month);
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }else{
-                                $('c[r=A1] t', sheet).text( 'Data Event Internal');
+                                $('c[r=A1] t', sheet).text( 'Data Pengguna Mahasiswa');
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }
                         }
@@ -134,6 +141,8 @@
                 ],
                 pagingType: "full_numbers",
         });
+
+        new $.fn.dataTable.FixedHeader( $dTable );
 
         let status = '';
         let kategori = '';

@@ -17,9 +17,9 @@
                                 </div>
                             </div>
                             <select name="nidn" id="" class="form-control" required>
-                                <option selected value="{{$pembina->nidn}}">{{$dosen->nama_dosen}}</option>
+                                <option selected value="{{$pembina->nidn}}">{{$dosen->dosen_nama}}</option>
                                 @foreach ($dosens as $dosen)
-                                <option value="{{$dosen->nidn}}">{{$dosen->nama_dosen}}</option>
+                                <option value="{{$dosen->dosen_nidn}}">{{$dosen->dosen_nama}}</option>
                                 @endforeach
                             </select>
                         </div>

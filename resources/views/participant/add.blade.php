@@ -29,7 +29,7 @@
                                     <i class="fas fa-signature"></i>
                                 </div>
                             </div>
-                            <input type="text" required name="username" class="form-control phone-number">
+                            <input type="text"  name="username" class="form-control phone-number">
                         </div>
                         @if ($errors->has('username'))
                         <span class="text-danger">{{ $errors->first('username') }}</span>

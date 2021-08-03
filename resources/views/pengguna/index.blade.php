@@ -5,9 +5,8 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <a href="{{route('pengguna.add')}}" class="btn btn-primary mb-3">Tambah pengguna</a>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-md" id="table-admin">
+                <a href="{{route('pengguna.add')}}" class="btn btn-primary mb-5">Tambah pengguna</a>
+                    <table class="table table-bordered table-md" id="table-admin" style="width: 100%">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -22,8 +21,8 @@
                         <tbody>
                             @foreach ($penggunas as $pengguna)
                             <tr id="tr_{{$pengguna->id_pengguna}}">
-                                <td>{{$loop->iteration}}</td>
-                                <td>{{$pengguna->username}}</td>
+                                <td width="5%">{{$loop->iteration}}</td>
+                                <td width="20%">{{$pengguna->username}}</td>
                                 <td>
                                     {{$pengguna->phone}}
                                 </td>
@@ -42,17 +41,16 @@
                                 <td> {{ date("d/m/Y", strtotime($pengguna->created_at)) }}</td>
                                 <td>
                                     <a href="{{route('pengguna.edit', $pengguna->id_pengguna)}}"
-                                        class="btn btn-secondary d-inline">Edit Akun</a>
+                                        class="btn btn-secondary d-inline mb-2" title="Edit Akun"><i class="fas fa-pen-square"></i></a>
                                     <a href="#" onclick="deletepengguna({{$pengguna->id_pengguna}})"
-                                        class="btn btn-danger mt-2 d-inline">Hapus</a>
+                                        class="btn btn-danger mt-2 d-inline mb-2" title="Hapus"> <i class="far fa-trash-alt"></i></a>
                                     <a href="{{route('pengguna.relasi', $pengguna->id_pengguna)}}"
-                                        class="btn btn-primary d-inline">Edit Relasi</a>
+                                        class="btn btn-primary d-inline mb-2" title="Edit Relasi"> <i class="fas fa-atom"></i></a>
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
-                </div>
             </div>
         </div>
     </div>
@@ -104,6 +102,7 @@
 
     $(document).ready(function () {
         var $dTable = $('#table-admin').DataTable({
+            responsive: true,
             "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
                         "<'row'<'col-sm-5'i><'col-sm-7'p>>",
@@ -129,6 +128,8 @@
                     }
                 ],
         });
+
+        new $.fn.dataTable.FixedHeader( $dTable );
 
         let status = '';
         let kategori = '';

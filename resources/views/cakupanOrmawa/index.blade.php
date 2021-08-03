@@ -5,9 +5,8 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <a href="{{route('cakupanOrmawa.add')}}" class="btn btn-primary mb-3">Tambah Cakupan Ormawa</a>
-                <div class="">
-                    <table class="table table-bordered table-md" id="table-admin">
+                <a href="{{route('cakupanOrmawa.add')}}" class="btn btn-primary mb-5">Tambah Cakupan Ormawa</a>
+                    <table class="table table-bordered table-md" id="table-admin" style="width: 100%">
                         <thead>
                             <tr>
                                 <th>No</th>
@@ -19,7 +18,7 @@
                         <tbody>
                             @foreach ($cakupans as $cakupan)
                             <tr id="tr_{{$cakupan->id_cakupan_ormawa}}">
-                                <td>{{$loop->iteration}}</td>
+                                <td width="10%">{{$loop->iteration}}</td>
                                 <td>
                                     @if ($cakupan->ormawa_id)
                                     {{$cakupan->ormawaRef->nama_ormawa}}
@@ -30,15 +29,14 @@
                                 </td>
                                 <td>
                                     <a href="{{route('cakupanOrmawa.edit', $cakupan->id_cakupan_ormawa)}}"
-                                        class="btn btn-secondary d-inline">Edit</a>
+                                        class="btn btn-secondary d-inline" title="Edit"><i class="fas fa-pen-square"></i></a>
                                     <a href="#" onclick="deleteCakupan({{$cakupan->id_cakupan_ormawa}})"
-                                        class="btn btn-danger d-inline">Hapus</a>
+                                        class="btn btn-danger d-inline" title="Hapus"><i class="fas fa-trash-alt"></i></a>
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
-                </div>
             </div>
         </div>
     </div>
@@ -54,7 +52,11 @@
     });
 
     $(document).ready(function () {
-      $('#table-admin').DataTable();
+        var $dTable = $('#table-admin').DataTable({
+            responsive:"true"
+        });
+
+        new $.fn.dataTable.FixedHeader( $dTable );
     });
 
     const deleteCakupan = (id_cakupan) => {
