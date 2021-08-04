@@ -7,7 +7,7 @@
       <a href="index.html">St</a>
     </div>
     <ul class="sidebar-menu">
-      <li><a class="nav-link" href="blank.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+      <li><a class="nav-link" href="{{route('dashboard')}}"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
       @if (Session::get('is_admin') == "1")
         <li class="nav-item dropdown">
           <a href="#" class="nav-link has-dropdown"><i class="fas fa-portrait"></i> <span>Admin</span></a>
@@ -63,7 +63,7 @@
         <a href="#" class="nav-link has-dropdown"><i class="fas fa-portrait"></i> <span>Pendaftaran Event</span></a>
         <ul class="dropdown-menu">
           <li><a class="nav-link" href="{{route('registrations.eventinternal.index')}}">Event Internal</a></li>
-          <li><a class="nav-link" href="{{route('wadir3.index')}}">Event Eksternal</a></li>
+          <li><a class="nav-link" href="{{route('registrations.eventeksternal.index')}}">Event Eksternal</a></li>
         </ul>
       </li>
   </aside>

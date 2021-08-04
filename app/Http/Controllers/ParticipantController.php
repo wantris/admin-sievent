@@ -17,7 +17,6 @@ class ParticipantController extends Controller
         $headerTitle = "Data Participant";
 
         $participants = $this->getAllData();
-
         return view('participant.index', compact('title', 'headerTitle', 'participants'));
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\CakupanOrmawa;
+use App\Exports\OrmawaExport;
 use App\Http\Requests\AdminStoreRequest;
 use App\Http\Requests\ormawaStoreRequest;
 use App\Ormawa;
@@ -10,6 +11,7 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Hash;
 use GuzzleHttp\Psr7;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ormawaController extends Controller
 {
@@ -18,7 +20,6 @@ class ormawaController extends Controller
         $title = "Organisasi Mahasiswa";
         $headerTitle = "Data Organisasi Mahasiswa";
         $ormawas = $this->getAllOrmawa();
-
 
         return view('ormawa.index', compact('title', 'headerTitle', 'ormawas'));
     }
@@ -290,5 +291,10 @@ class ormawaController extends Controller
         } catch (\Throwable $err) {
             return $ormawa;
         }
+    }
+
+    public function export()
+    {
+        return Excel::download(new OrmawaExport, 'Data_Organisasi_Mahasiswa.xlsx');
     }
 }

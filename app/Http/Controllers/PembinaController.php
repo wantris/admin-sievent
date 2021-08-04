@@ -16,21 +16,24 @@ class PembinaController extends Controller
     {
         $title = "Pembina";
         $headerTitle = "Data Pembina";
+        $api_dosen = new ApiDosenController;
 
         $pembinas = Pembina::all();
+        $ormawas = Ormawa::all()->pluck('nama_ormawa');
+
         foreach ($pembinas as $pembina) {
             $pembina->dosenRef = null;
 
             // call API
             $api_dosen = new ApiDosenController;
-            $dosen = $api_dosen->getDosenByNidn($pembina->nidn);
+            $dosen = $api_dosen->getDosenOnlySomeField($pembina->nidn);
 
             if ($dosen) {
                 $pembina->dosenRef = $dosen;
             }
         }
 
-        return view('pembina.index', compact('title', 'headerTitle', 'pembinas'));
+        return view('pembina.index', compact('title', 'headerTitle', 'pembinas', 'ormawas'));
     }
 
     public function add()

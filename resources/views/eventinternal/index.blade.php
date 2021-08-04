@@ -1,5 +1,6 @@
 @extends('app')
 
+
 @section('content')
 <div class="row">
     <div class="col-lg-12">
@@ -52,8 +53,8 @@
                         @foreach ($events as $event)
                         <tr id="tr_{{$event->id_event_internal}}">
                             <td width="5%">{{$loop->iteration}}</td>
-                            <td width="20%">{{$event->nama_event}}</td>
-                            <td width="25%">{{$event->ormawa_ref->nama_ormawa}}</td>
+                            <td>{{$event->nama_event}}</td>
+                            <td>{{$event->ormawa_ref->nama_ormawa}}</td>
                             <td>{{$event->tipe_peserta_ref->nama_tipe}}</td>
                             <td>{{$event->kategori_ref->nama_kategori}}</td>
                             <td>{{$event->role}}</td>
@@ -81,19 +82,24 @@
                             <td>
                                 {{ date("d/m/Y", strtotime($event->created_at)) }}
                             </td>
-                            <td width="40%">
-                                    <a href="{{route('eventinternal.edit', $event->id_event_internal)}}"
-                                        class="btn btn-secondary d-inline-block mb-1" title="Edit"><i class="fas fa-pen-square"></i></a>
-                                    <a onclick="deleteEvent({{$event->id_event_internal}})" href="#"
-                                        class="btn btn-danger d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
-                                    <a href="{{route('eventinternal.pengajuan', $event->id_event_internal)}}"
-                                        class="btn btn-primary d-inline-block mb-1" title="Lihat Pengajuan"><i class="fas fa-book-open"></i></a>
+                            <td>
+                                <div class="btn-group dropleft">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Action
+                                    </button>
+                                    <div class="dropdown-menu dropdown-action">
+                                        <a class="dropdown-item dropdown-action-item" href="{{route('eventinternal.edit', $event->id_event_internal)}}"><i class="fas fa-pen-square mr-2"></i>Edit</a>
+                                        <a class="dropdown-item dropdown-action-item" onclick="deleteEvent({{$event->id_event_internal}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                        <a class="dropdown-item dropdown-action-item" href="{{route('eventinternal.pengajuan', $event->id_event_internal)}}"><i class="fas fa-book-open mr-2"></i>Lihat Pengajuan</a>
+                                        <a class="dropdown-item dropdown-action-item" href="{{route('registrations.eventinternal.getbyevent', $event->id_event_internal)}}"><i class="fas fa-users mr-2"></i>Lihat Pendaftar</a>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
-        </div>
+            </div>
         </div>
     </div>
 </div>
@@ -144,27 +150,31 @@
     }
 
     $(document).ready(function () {
+        var ormawa = $('#ormawa-filter').val();
         var $dTable = $('#table-admin').DataTable({
             responsive:"true",
-            "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
+            "lengthChange": false,
+            "dom":"<'row'<'col-lg-5'B ><'col-lg-3 col-12'f><'col-lg-4 col-12 ' <'datesearchbox'>>>" +
                         "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                buttons: [ 
-                    'colvis',    
+                        "<'row'<'col-sm-5'><'col-sm-7'p>>",
+                buttons: [    
                     {
                         extend: 'excelHtml5',
+                        title: 'Data Event Internal',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8,9]
                         },
+                        className:'btnExcel',
                         customize: function ( xlsx ) {
                             var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                            
                             if(start_date != null && end_date != null){
                                 convertStart(String(start_date));
                                 convertEnd(String(end_date));
-                                $('c[r=A1] t', sheet).text( 'Data Event Internal '+ start_month + " - "+ end_month);
+                                $('c[r=A1] t', sheet).text( 'Data Event Internal '+ ormawa+ ' '+ start_month + " - "+ end_month);
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }else{
-                                $('c[r=A1] t', sheet).text( 'Data Event Internal');
+                                $('c[r=A1] t', sheet).text( 'Data Event Internal '+ ormawa);
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }
                         }

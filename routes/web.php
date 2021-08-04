@@ -48,6 +48,8 @@ Route::group(['prefix' => 'wadir3'], function () {
     Route::get('/edit/{id}', 'wadir3Controller@edit')->name('wadir3.edit');
     Route::patch('/update/{id}', 'wadir3Controller@update')->name('wadir3.update');
     Route::delete('/delete/{id}', 'wadir3Controller@delete')->name('wadir3.delete');
+
+    Route::get('/export', 'wadir3Controller@export')->name('wadir3.export');
 });
 
 // =================== kategori event ============
@@ -71,6 +73,8 @@ Route::group(['prefix' => 'ormawa'], function () {
     Route::get('/edit/{id_ormawa}', 'ormawaController@edit')->name('ormawa.edit');
     Route::patch('/update/{id_ormawa}', 'ormawaController@update')->name('ormawa.update');
     Route::delete('/delete/{id_ormawa}', 'ormawaController@delete')->name('ormawa.delete');
+
+    Route::get('/export', 'ormawaController@export')->name('ormawa.export');
 });
 
 
@@ -126,6 +130,8 @@ Route::group(['prefix' => 'mahasiswa'], function () {
     Route::get('/edit/{nim}', 'mahasiswaController@edit')->name('mahasiswa.edit');
     Route::patch('/update/{nim}', 'mahasiswaController@update')->name('mahasiswa.update');
     Route::delete('/delete/{nim}', 'mahasiswaController@delete')->name('mahasiswa.delete');
+
+    Route::get('/export', 'mahasiswaController@export')->name('mahasiswa.export');
 });
 
 // ================== dosen ===============
@@ -193,6 +199,13 @@ Route::group(['prefix' => 'team'], function () {
 //  ==================== registration =====================
 
 Route::group(['prefix' => 'registration'], function () {
+    // eventinternal
     Route::get('/eventinternal', 'EventInternalRegisController@index')->name('registrations.eventinternal.index');
+    Route::get('/eventinternal/idevent/{id_eventinternal}', 'EventInternalRegisController@getByEvent')->name('registrations.eventinternal.getbyevent');
     Route::post('/eventinternal/updatestatus/{id_regis}', 'EventInternalRegisController@updateStatus')->name('registrations.eventinternal.updatestatus');
+
+    // eventeksternal
+    Route::get('/eventeksternal', 'EventEksternalRegisController@index')->name('registrations.eventeksternal.index');
+    Route::post('/eventeksternal/updatestatus/{id_regis}', 'EventEksternalRegisController@updateStatus')->name('registrations.eventeksternal.updatestatus');
+    Route::get('/eventeksternal/idevent/{id_eventeksternal}', 'EventEksternalRegisController@getByEvent')->name('registrations.eventeksternal.getbyevent');
 });

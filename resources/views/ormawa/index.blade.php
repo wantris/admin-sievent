@@ -5,7 +5,12 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <a href="{{route('ormawa.add')}}" class="btn btn-primary mb-4">Tambah Ormawa</a>
+                <div class="row mb-4">
+                    <div class="d-flex col-12">
+                        <a href="{{route('ormawa.add')}}" class="btn btn-primary mr-2">Tambah Ormawa</a>
+                        <a href="{{route('ormawa.export')}}" class="btn btn-success">Excel</a>
+                    </div>
+                </div>
                 <table class="table table-bordered table-md" id="table-admin" style="width: 100%">
                     <thead>
                         <tr>
@@ -28,12 +33,16 @@
                             <td>{{$ormawa->email}}</td>
                             <td>{{$ormawa->created_at}}</td>
                             <td width="25%">
-                                <a href="{{route('ormawa.detail', $ormawa->id_ormawa)}}"
-                                    class="btn btn-primary d-inline-block mb-1" title="Detail"><i class="fas fa-eye"></i></a>
-                                <a href="{{route('ormawa.edit', $ormawa->id_ormawa)}}"
-                                    class="btn btn-secondary d-inline-block mb-1" title="Edit"><i class="fas fa-pen-square"></i></a>
-                                <a href="#" onclick="deleteOrmawa({{$ormawa->id_ormawa}})"
-                                    class="btn btn-danger d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
+                                <div class="btn-group dropleft">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Action
+                                    </button>
+                                    <div class="dropdown-menu dropdown-action">
+                                        <a class="dropdown-item dropdown-action-item" href="{{route('ormawa.detail', $ormawa->id_ormawa)}}"><i class="fas fa-eye mr-2"></i>Detail</a>
+                                        <a class="dropdown-item dropdown-action-item" href="{{route('ormawa.edit', $ormawa->id_ormawa)}}"><i class="fas fa-pen-square mr-2"></i>Edit</a>
+                                        <a class="dropdown-item dropdown-action-item" onclick="deleteOrmawa({{$ormawa->id_ormawa}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -54,7 +63,8 @@
     });
     $(document).ready(function () {
         var $dTable = $('#table-admin').DataTable({
-            responsive:"true"
+            responsive:"true",
+            "lengthChange": false,
         });
 
         new $.fn.dataTable.FixedHeader( $dTable );

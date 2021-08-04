@@ -6,7 +6,7 @@
         <div class="card">
             <div class="card-body">
                 <a href="{{route('eventeksternal.add')}}" class="btn btn-primary mb-4">Tambah Event Eksternal</a>
-                <div class="row mb-4">
+                <div class="row mb-5">
                     <div class="col-lg-3 col-12">
                         <select class="form-control" id="kategori-filter">
                             <option selected value="">Filter Kategori</option>
@@ -82,12 +82,17 @@
                                 {{ date("d/m/Y", strtotime($event->created_at)) }}
                             </td>
                             <td width="40%">
-                                <a href="{{route('eventeksternal.edit', $event->id_event_eksternal)}}"
-                                    class="btn btn-secondary d-inline-block mb-1" title="Edit"><i class="fas fa-pen-square"></i></a>
-                                <a onclick="deleteEvent({{$event->id_event_eksternal}})" href="#"
-                                    class="btn btn-danger d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
-                                <a href="{{route('eventeksternal.pengajuan', $event->id_event_eksternal)}}"
-                                    class="btn btn-primary d-inline-block mb-1" title="Lihat Pengajuan"><i class="fas fa-book-open"></i></a>
+                                <div class="btn-group dropleft">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Action
+                                    </button>
+                                    <div class="dropdown-menu dropdown-action">
+                                        <a class="dropdown-item dropdown-action-item" href="{{route('eventeksternal.edit', $event->id_event_eksternal)}}"><i class="fas fa-pen-square mr-2"></i>Edit</a>
+                                        <a class="dropdown-item dropdown-action-item" onclick="deleteEvent({{$event->id_event_eksternal}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                        <a class="dropdown-item dropdown-action-item" href="{{route('eventeksternal.pengajuan', $event->id_event_eksternal)}}"><i class="fas fa-book-open mr-2"></i>Lihat Pengajuan</a>
+                                        <a class="dropdown-item dropdown-action-item" href="{{route('registrations.eventeksternal.getbyevent', $event->id_event_eksternal)}}"><i class="fas fa-users mr-2"></i>Lihat Pendaftar</a>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -143,27 +148,29 @@
     }
 
     $(document).ready(function () {
+        var ormawa = $('#ormawa-filter').val();
         var $dTable = $('#table-admin').DataTable({
             responsive:"true",
-            "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
+            "lengthChange": false,
+            "dom":"<'row'<'col-lg-5'B ><'col-lg-3 col-12'f><'col-lg-4 col-12 ' <'datesearchbox'>>>" +
                         "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                buttons: [ 
-                    'colvis',    
+                        "<'row'<'col-sm-5'><'col-sm-7'p>>",
+                buttons: [    
                     {
                         extend: 'excelHtml5',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8,9]
                         },
+                        className:'btnExcel',
                         customize: function ( xlsx ) {
                             var sheet = xlsx.xl.worksheets['sheet1.xml'];
                             if(start_date != null && end_date != null){
                                 convertStart(String(start_date));
                                 convertEnd(String(end_date));
-                                $('c[r=A1] t', sheet).text( 'Data Event Eksternal '+ start_month + " - "+ end_month);
+                                $('c[r=A1] t', sheet).text( 'Data Event Eksternal '+ ormawa+ ' '+ start_month + " - "+ end_month);
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }else{
-                                $('c[r=A1] t', sheet).text( 'Data Event Eksternal');
+                                $('c[r=A1] t', sheet).text( 'Data Event Eksternal '+ormawa);
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }
                         }

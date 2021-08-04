@@ -21,10 +21,15 @@
                                 <td width="5%">{{$loop->iteration}}</td>
                                 <td>{{$tp->nama_tipe}}</td>
                                 <td>
-                                    <a href="{{route('tipepeserta.edit', $tp->id_tipe_peserta)}}"
-                                        class="btn btn-secondary d-inline-block mb-1" title="Edit"><i class="fas fa-pen-square"></i></a>
-                                    <a href="#" onclick="deleteTipe({{$tp->id_tipe_peserta}})"
-                                        class="btn btn-danger d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
+                                    <div class="btn-group dropleft">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Action
+                                        </button>
+                                        <div class="dropdown-menu dropdown-action">
+                                            <a class="dropdown-item dropdown-action-item" href="{{route('tipepeserta.edit', $tp->id_tipe_peserta)}}"><i class="fas fa-pen-square mr-2"></i>Edit</a>
+                                            <a class="dropdown-item dropdown-action-item" onclick="deleteTipe({{$tp->id_tipe_peserta}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach

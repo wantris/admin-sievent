@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\ApiMahasiswaController;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\MahasiswaExport;
 
 class MahasiswaController extends Controller
 {
@@ -150,5 +152,10 @@ class MahasiswaController extends Controller
         } catch (\Throwable $err) {
             return $mahasiswas;
         }
+    }
+
+    public function export()
+    {
+        return Excel::download(new MahasiswaExport, 'Data_Pengguna_Mahasiswa.xlsx');
     }
 }

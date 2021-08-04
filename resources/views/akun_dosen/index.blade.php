@@ -52,7 +52,16 @@
                             </td>
                             <td>{{ date("d/m/Y", strtotime($dosen->created_at)) }}</td>
                             <td>
-                                <a href="{{route('dosen.edit', $dosen->nidn)}}"
+                                <div class="btn-group dropleft">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Action
+                                    </button>
+                                    <div class="dropdown-menu dropdown-action">
+                                        <a class="dropdown-item dropdown-action-item" href="{{route('dosen.edit', $dosen->nidn)}}"><i class="fas fa-pen-square mr-2"></i>Edit</a>
+                                        <a class="dropdown-item dropdown-action-item" onclick="deleteDosen({{$dosen->nidn}})"href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                    </div>
+                                </div>
+                                <a href=""
                                     class="btn btn-secondary d-inline-block mb-1" title="Edit"><i class="fas fa-pen-square"></i></a>
                                 <a href="#" onclick="deleteMahasiswa({{$dosen->nidn}})"
                                     class="btn btn-danger mt-2 d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
@@ -114,16 +123,18 @@
         $.fn.dataTable.ext.classes.sPageButton = 'button button-primary';
         var $dTable = $('#table-admin').DataTable({
             responsive: true,
-            "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
+            "lengthChange": false,
+            "dom":"<'row'<'col-lg-5'B ><'col-lg-3 col-12'f><'col-lg-4 col-12 ' <'datesearchbox'>>>" +
                         "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                buttons: [ 
-                    'colvis',    
+                        "<'row'<'col-sm-5'><'col-sm-7'p>>",
+                buttons: [   
                     {
                         extend: 'excelHtml5',
+                        title: 'Data Akun Dosen',
                         exportOptions: {
                             columns: [ 1, 2, 3, 4, 5]
                         },
+                        className:'btnExcel',
                         customize: function ( xlsx ) {
                             var sheet = xlsx.xl.worksheets['sheet1.xml'];
                             if(start_date != null && end_date != null){

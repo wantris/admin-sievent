@@ -9,7 +9,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <div class="row mb-3">
+                <div class="row mb-5">
                     <div class="col-lg-3 col-12">
                         <select name="event" id="event-select" class="form-control">
                             <option value="">Semua Event</option>
@@ -30,9 +30,10 @@
                 <table class="table table-bordered nowrap" id="table-pendaftaran" style="width: 100%">
                     <thead>
                         <tr>
+                            <th>No.</th>
                             <th>ID Pendaftaran</th>
                             <th>ID Tim</th>
-                            <th >Nama Peserta/Ketua</th>
+                            <th>Nama Peserta/Ketua</th>
                             <th>Event</th>
                             <th>Sudah Tervalidasi</th>
                             <th>Status Pendaftar</th>
@@ -44,6 +45,7 @@
                         @foreach ($registrations as $regis)
                             @if ($regis->event_internal_ref->role == "Individu")
                                 <tr id="tr_{{$regis->id_event_internal_registration}}">
+                                    <td width="5%">{{$loop->iteration}}</td>
                                     <td width="5%">{{$regis->id_event_internal_registration}}</td>
                                     <td></td>
                                     <td>
@@ -75,17 +77,24 @@
                                     </td>
                                     <td>{{ date("d/m/Y", strtotime($regis->created_at)) }}</td>
                                     <td>
-                                        @if ($regis->status == "1")
-                                            <a href="#" onclick="updateStatus({{$regis->id_event_internal_registration}}, '0')" class="btn btn-secondary d-inline-block mb-1" title="Buat Tidak Tervalidasi"><i class="fas fa-ban"></i></a>
-                                        @else
-                                            <a href="#" onclick="updateStatus({{$regis->id_event_internal_registration}}, '1')" class="btn btn-primary d-inline-block mb-1" title="Buat Tervalidasi"><i class="fas fa-check-circle"></i></a>
-                                        @endif
-                                        <a href="#" onclick="deleteTim({{$regis->id_event_internal_registration}})"
-                                            class="btn btn-danger d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Action
+                                            </button>
+                                            <div class="dropdown-menu dropdown-action">
+                                                @if ($regis->status == "1")
+                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_internal_registration}}, '0')" href="#"><i class="fas fa-ban mr-2"></i>Buat Tidak Tervalidasi</a>
+                                                @else
+                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_internal_registration}}, '1')" href="#"><i class="fas fa-check-circle-2"></i>Buat Tervalidasi</a>
+                                                @endif
+                                                <a class="dropdown-item dropdown-action-item" onclick="deleteTim({{$regis->id_event_internal_registration}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @else
                                 <tr id="tr_{{$regis->id_event_internal_registration}}">
+                                    <td>{{$loop->iteration}}</td>
                                     <td width="5%">{{$regis->id_event_internal_registration}}</td>
                                     <td>{{$regis->tim_event_id}}</td>
                                     <td>
@@ -127,14 +136,20 @@
                                         @php
                                             $tim_detail_json = json_encode($regis->tim_ref->tim_detail_ref);
                                         @endphp
-                                        <a href="#" onclick="detailTim({{$tim_detail_json}})" class="btn btn-success d-inline-block mb-1" title="Detail"><i class="fas fa-eye"></i></a>
-                                        @if ($regis->status == "1")
-                                            <a href="#" onclick="updateStatus({{$regis->id_event_internal_registration}}, '0')" class="btn btn-secondary d-inline-block mb-1" title="Buat Tidak Tervalidasi"><i class="fas fa-ban"></i></a>
-                                        @else
-                                            <a href="#" onclick="updateStatus({{$regis->id_event_internal_registration}}, '1')" class="btn btn-primary d-inline-block mb-1" title="Buat Tervalidasi"><i class="fas fa-check-circle"></i></a>
-                                        @endif
-                                        <a href="#" onclick="deleteTim({{$regis->id_event_internal_registration}})"
-                                            class="btn btn-danger d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Action
+                                            </button>
+                                            <div class="dropdown-menu dropdown-action">
+                                                <a class="dropdown-item dropdown-action-item" onclick="detailTim({{$tim_detail_json}})" href="#"><i class="fas fa-eye mr-2"></i>Detail Tim</a>
+                                                @if ($regis->status == "1")
+                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_internal_registration}}, '0')" href="#"><i class="fas fa-ban mr-2"></i>Buat Tidak Tervalidasi</a>
+                                                @else
+                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_internal_registration}}, '1')" href="#"><i class="fas fa-check-circle-2"></i>Buat Tervalidasi</a>
+                                                @endif
+                                                <a class="dropdown-item dropdown-action-item" onclick="deleteTim({{$regis->id_event_internal_registration}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @endif
@@ -237,6 +252,7 @@
                         exportOptions: {
                             columns: [1, 2, 3, 4]
                         },
+                        className:'btnExcel',
                         customize: function ( xlsx ) {
                             var sheet = xlsx.xl.worksheets['sheet1.xml'];
                             if(start_date != null && end_date != null){

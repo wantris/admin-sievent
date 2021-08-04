@@ -9,7 +9,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <div class="row mb-3">
+                <div class="row mb-5">
                     <div class="col-lg-3 col-12">
                         <select name="event" id="event-select" class="form-control">
                             <option value="">Semua Event</option>
@@ -25,6 +25,7 @@
                                 <th></th>
                                 <th>No</th>
                                 <th>ID Tim</th>
+                                <th>Pembimbing</th>
                                 <th>Nama Event</th>
                                 <th>Ketua Tim</th>
                                 <th>Status</th>
@@ -38,6 +39,13 @@
                                     <td></td>
                                     <td width="5%">{{$loop->iteration}}</td>
                                     <td>{{$tim->id_tim_event}}</td>
+                                    <td>
+                                        @if ($tim->dosen_ref)
+                                            {{$tim->dosen_ref->dosen_lengkap_nama}}
+                                        @else
+                                            {{$tim->nidn}}
+                                        @endif
+                                    </td>
                                     <td>{{$tim->event_internal_regis_ref->event_internal_ref->nama_event}}</td>
                                     <td>
                                         @foreach ($tim->tim_detail_ref as $detail)
@@ -66,14 +74,20 @@
                                         @php
                                             $tim_detail_json = json_encode($tim->tim_detail_ref);
                                         @endphp
-                                        <a href="#" onclick="detailTim({{$tim_detail_json}})" class="btn btn-success d-inline-block mb-1" title="Detail"><i class="fas fa-eye"></i></a>
-                                        @if ($tim->status == "1")
-                                            <a href="#" onclick="updateStatus({{$tim->id_tim_event}}, '0')" class="btn btn-secondary d-inline-block mb-1" title="Buat Tidak Tervalidasi"><i class="fas fa-ban"></i></a>
-                                        @else
-                                            <a href="#" onclick="updateStatus({{$tim->id_tim_event}}, '1')" class="btn btn-primary d-inline-block mb-1" title="Buat Tervalidasi"><i class="fas fa-check-circle"></i></a>
-                                        @endif
-                                        <a href="#" onclick="deleteTim({{$tim->id_tim_event}})"
-                                            class="btn btn-danger d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
+                                        <div class="btn-group dropleft">
+                                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Action
+                                            </button>
+                                            <div class="dropdown-menu dropdown-action">
+                                                <a class="dropdown-item dropdown-action-item" onclick="detailTim({{$tim_detail_json}})" href="#"><i class="fas fa-eye mr-2"></i>Detail</a>
+                                                @if ($tim->status == "1")
+                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$tim->id_tim_event}}, '0')" href="#"><i class="fas fa-ban"></i>Buat Tidak Tervalidasi</a>
+                                                @else
+                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$tim->id_tim_event}}, '1')" href="#"><i class="fas fa-check-circle-2"></i>Buat Tervalidasi</a>
+                                                @endif
+                                                <a class="dropdown-item dropdown-action-item" onclick="deleteTim({{$tim->id_tim_event}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -171,20 +185,13 @@
             "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
                         "<'row'<'col-sm-12'tr>>" +
                         "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                "columnDefs": [
-                    {
-                        "targets": [ 4 ],
-                        "visible": false,
-                        "searchable": true
-                    },
-                ],
-                buttons: [ 
-                    'colvis',    
+                buttons: [     
                     {
                         extend: 'excelHtml5',
                         exportOptions: {
                             columns: [1, 2, 3, 4]
                         },
+                        className:'btnExcel',
                         customize: function ( xlsx ) {
                             var sheet = xlsx.xl.worksheets['sheet1.xml'];
                             if(start_date != null && end_date != null){

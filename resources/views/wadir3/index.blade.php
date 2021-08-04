@@ -5,7 +5,14 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <a href="{{route('wadir3.add')}}" class="btn btn-primary mb-3">Tambah Wakil Direktur 3</a>
+                <div class="row mb-4">
+                    <div class="col-12">
+                       <div class="d-flex">
+                        <a href="{{route('wadir3.add')}}" class="btn btn-primary mr-2">Tambah Wakil Direktur 3</a>
+                        <a href="{{route('wadir3.export')}}" class="btn btn-success">Excel</a>
+                       </div>
+                    </div>
+                </div>
                 <div class="">
                     <table class="table table-bordered table-md" id="table-admin" style="width: 100%" cellspacing="0">
                         <thead>
@@ -33,8 +40,15 @@
                                 </td>
                                 <td>{{$wadir3->created_at->isoFormat('D MMMM Y')}}</td>
                                 <td>
-                                    <a href="{{route('wadir3.edit', $wadir3->id_wadir3)}}" class="btn btn-secondary d-inline">Edit</a>
-                                    <a href="#" onclick="deleteWadir({{$wadir3->id_wadir3}})" class="btn btn-danger d-inline">Hapus</a>
+                                    <div class="btn-group dropleft">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Action
+                                        </button>
+                                        <div class="dropdown-menu dropdown-action">
+                                            <a class="dropdown-item dropdown-action-item" href="{{route('wadir3.edit', $wadir3->id_wadir3)}}"><i class="fas fa-pen-square mr-2"></i>Edit</a>
+                                            <a class="dropdown-item dropdown-action-item" onclick="deleteWadir({{$wadir3->id_wadir3}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach

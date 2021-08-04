@@ -45,13 +45,15 @@ class ApiMahasiswaController extends Controller
             $client = new Client();
             $url = env('SECOND_BACKEND_URL') . "mahasiswa/search";
             $response = $client->request('GET', $url, [
-                'verify'  => false,
                 'headers' => ['Authorization-Polindra' => env('API_KEY')],
                 'query' => [
                     'prefix' => env('PREFIX_KEY'),
                     'nim' => $nim
                 ]
             ]);
+
+            dd($response->getBody());
+
             $data = json_decode($response->getBody())->data;
 
             $decrypt = openssl_decrypt($data, $cipher, env('API_KEY'), 0, env('PREFIX_KEY'));

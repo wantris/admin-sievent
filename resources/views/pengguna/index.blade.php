@@ -40,12 +40,16 @@
                                 </td>
                                 <td> {{ date("d/m/Y", strtotime($pengguna->created_at)) }}</td>
                                 <td>
-                                    <a href="{{route('pengguna.edit', $pengguna->id_pengguna)}}"
-                                        class="btn btn-secondary d-inline mb-2" title="Edit Akun"><i class="fas fa-pen-square"></i></a>
-                                    <a href="#" onclick="deletepengguna({{$pengguna->id_pengguna}})"
-                                        class="btn btn-danger mt-2 d-inline mb-2" title="Hapus"> <i class="far fa-trash-alt"></i></a>
-                                    <a href="{{route('pengguna.relasi', $pengguna->id_pengguna)}}"
-                                        class="btn btn-primary d-inline mb-2" title="Edit Relasi"> <i class="fas fa-atom"></i></a>
+                                    <div class="btn-group dropleft">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Action
+                                        </button>
+                                        <div class="dropdown-menu dropdown-action">
+                                            <a class="dropdown-item dropdown-action-item" href="{{route('pengguna.edit', $pengguna->id_pengguna)}}"><i class="fas fa-pen-square mr-2"></i>Edit</a>
+                                            <a class="dropdown-item dropdown-action-item"  onclick="deletepengguna({{$pengguna->id_pengguna}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                            <a class="dropdown-item dropdown-action-item" href="{{route('pengguna.relasi', $pengguna->id_pengguna)}}"><i class="fas fa-atom mr-2"></i>Relasi Akun</a>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach
@@ -103,25 +107,27 @@
     $(document).ready(function () {
         var $dTable = $('#table-admin').DataTable({
             responsive: true,
-            "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
+            "lengthChange": false,
+            "dom":"<'row'<'col-lg-5'B ><'col-lg-3 col-12'f><'col-lg-4 col-12 ' <'datesearchbox'>>>" +
                         "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        "<'row'<'col-sm-5'><'col-sm-7'p>>",
                 buttons: [ 
-                    'colvis',    
                     {
                         extend: 'excelHtml5',
+                        title: 'Data Pengguna',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]
+                            columns: [0, 1, 2, 3, 5]
                         },
+                        className:'btnExcel',
                         customize: function ( xlsx ) {
                             var sheet = xlsx.xl.worksheets['sheet1.xml'];
                             if(start_date != null && end_date != null){
                                 convertStart(String(start_date));
                                 convertEnd(String(end_date));
-                                $('c[r=A1] t', sheet).text( 'Data Event Internal '+ start_month + " - "+ end_month);
+                                $('c[r=A1] t', sheet).text( 'Data Pengguna '+ start_month + " - "+ end_month);
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }else{
-                                $('c[r=A1] t', sheet).text( 'Data Event Internal');
+                                $('c[r=A1] t', sheet).text( 'Data Pengguna');
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }
                         }

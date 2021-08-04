@@ -24,7 +24,16 @@
                 <td>{{$admin->nama}}</td>
                 <td>{{$admin->username}}</td>
                 <td>{{$admin->created_at->isoFormat('D MMMM Y')}}</td>
-                <td><a href="{{route('admin.edit', $admin->id_admin)}}" class="btn btn-secondary">Edit</a></td>
+                <td>
+                    <div class="btn-group dropleft">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                        </button>
+                        <div class="dropdown-menu dropdown-action">
+                            <a class="dropdown-item dropdown-action-item" href="{{route('admin.edit', $admin->id_admin)}}"><i class="fas fa-pen-square mr-2"></i>Edit</a>
+                        </div>
+                    </div>
+                </td>
               </tr>
               @endforeach
             </tbody>

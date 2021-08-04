@@ -22,6 +22,7 @@
                         </thead>
                         <tbody>
                             @foreach ($participants as $participant)
+                            @if ($participant->pengguna_ref)
                             <tr id="tr_{{$participant->id_participant}}">
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{$participant->nama_participant}}</td>
@@ -45,12 +46,18 @@
                                 </td>
                                 <td> {{ date("d/m/Y", strtotime($participant->created_at)) }}</td>
                                 <td>
-                                    <a href="{{route('participant.edit', $participant->id_participant)}}"
-                                        class="btn btn-secondary d-inline">Edit</a>
-                                    <a href="#" onclick="deleteParticipant({{$participant->id_participant}})"
-                                        class="btn btn-danger mt-2 d-inline">Hapus</a>
+                                    <div class="btn-group dropleft">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Action
+                                        </button>
+                                        <div class="dropdown-menu dropdown-action">
+                                            <a class="dropdown-item dropdown-action-item" href="{{route('participant.edit', $participant->id_participant)}}"><i class="fas fa-pen-square mr-2"></i>Edit</a>
+                                            <a class="dropdown-item dropdown-action-item" onclick="deleteParticipant({{$participant->id_participant}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
+                            @endif
                             @endforeach
                         </tbody>
                     </table>
@@ -106,9 +113,10 @@
 
     $(document).ready(function () {
         var $dTable = $('#table-admin').DataTable({
-            "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>" +
+            "lengthChange": false,
+            "dom":"<'row'<'col-lg-5'B ><'col-lg-3 col-12'f><'col-lg-4 col-12 ' <'datesearchbox'>>>" +
                         "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                        "<'row'<'col-sm-5'><'col-sm-7'p>>",
                 "columnDefs": [
                     {
                         "targets": [ 4 ],
@@ -116,13 +124,13 @@
                         "searchable": true
                     },
                 ],
-                buttons: [ 
-                    'colvis',    
+                buttons: [    
                     {
                         extend: 'excelHtml5',
                         exportOptions: {
                             columns: [1, 2, 3, 4]
                         },
+                        className:'btnExcel',
                         customize: function ( xlsx ) {
                             var sheet = xlsx.xl.worksheets['sheet1.xml'];
                             if(start_date != null && end_date != null){

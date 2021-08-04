@@ -20,10 +20,15 @@
                                 <td width="10%">{{$loop->iteration}}</td>
                                 <td>{{$kategori->nama_kategori}}</td>
                                 <td>
-                                    <a href="{{route('kategorievent.edit', $kategori->id_kategori)}}"
-                                        class="btn btn-secondary d-inline" title="Edit"><i class="fas fa-pen-square"></i></a>
-                                    <a href="#" onclick="deleteKategori({{$kategori->id_kategori}})"
-                                        class="btn btn-danger d-inline" title="Hapus"><i class="fas fa-trash-alt"></i></a>
+                                    <div class="btn-group dropleft">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Action
+                                        </button>
+                                        <div class="dropdown-menu dropdown-action">
+                                            <a class="dropdown-item dropdown-action-item" href="{{route('kategorievent.edit', $kategori->id_kategori)}}"><i class="fas fa-pen-square mr-2"></i>Edit</a>
+                                            <a class="dropdown-item dropdown-action-item" onclick="deleteKategori({{$kategori->id_kategori}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach

@@ -23,7 +23,6 @@ class dosenController extends Controller
         $api_dosen = $this->api_dosen;
 
         $dosens = $this->getAllData();
-        dd($dosens);
 
         return view('akun_dosen.index', compact('title', 'headerTitle', 'dosens'));
     }

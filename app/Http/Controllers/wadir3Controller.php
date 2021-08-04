@@ -8,11 +8,11 @@ use GuzzleHttp\Client;
 use App\Http\Controllers\ApiDosenController;
 use App\Pengguna;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\Wadir3Export;
 
 class wadir3Controller extends Controller
 {
-
-
     public function index()
     {
         $title = "Wakil Direktur 3";
@@ -133,5 +133,10 @@ class wadir3Controller extends Controller
                 "message" => $$err,
             ]);
         }
+    }
+
+    public function export()
+    {
+        return Excel::download(new Wadir3Export, 'wadir_3.xlsx');
     }
 }

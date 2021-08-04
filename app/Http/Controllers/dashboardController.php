@@ -48,7 +48,7 @@ class dashboardController extends Controller
             'tim',
             'eir',
             'eer',
-            'dosens',
+            'dosens'
         ));
     }
 }

@@ -6,6 +6,16 @@
         <div class="card">
             <div class="card-body">
                 <a href="{{route('pembina.add')}}" class="btn btn-primary mb-4">Tambah Pembina</a>
+                <div class="row mb-4">
+                    <div class="col-lg-3 col-12">
+                        <select name="" id="ormawa-select" class="form-control">
+                            <option value="">Semua Ormawa</option>
+                            @foreach ($ormawas as $ormawa)
+                                <option value="{{$ormawa}}">{{$ormawa}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
                 <table class="table table-bordered table-md" id="table-admin" style="width: 100%">
                     <thead>
                         <tr>
@@ -24,7 +34,7 @@
                             <td>{{$loop->iteration}}</td>
                             <td>
                                 @if ($pembina->dosenRef)
-                                    {{$pembina->dosenRef->dosen_nama}}
+                                    {{$pembina->dosenRef->dosen_lengkap_nama}}
                                 @endif
                             </td>
                             <td>{{$pembina->ormawaRef->nama_ormawa}}</td>
@@ -38,10 +48,15 @@
                             </td>
                             <td>{{$pembina->created_at->isoFormat('D MMMM Y')}}</td>
                             <td>
-                                <a href="{{route('pembina.edit', $pembina->id_pembina)}}"
-                                    class="btn btn-secondary d-inline-block mb-1" title="Edit"><i class="fas fa-pen-square"></i></a>
-                                <a href="#" onclick="deletePembina({{$pembina->id_pembina}})"
-                                    class="btn btn-danger d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
+                                <div class="btn-group dropleft">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Action
+                                    </button>
+                                    <div class="dropdown-menu dropdown-action">
+                                        <a class="dropdown-item dropdown-action-item" href="{{route('pembina.edit', $pembina->id_pembina)}}"><i class="fas fa-pen-square mr-2"></i>Edit</a>
+                                        <a class="dropdown-item dropdown-action-item"  onclick="deletePembina({{$pembina->id_pembina}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -57,7 +72,22 @@
 <script>
     $(document).ready(function () {
         var $dTable = $('#table-admin').DataTable({
-            responsive:"true"
+            responsive:"true",
+            dom: 'Bfrtip',
+            buttons: [    
+                    {
+                        extend: 'excelHtml5',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5]
+                        },
+                        className:'btnExcel',
+                        customize: function ( xlsx ) {
+                            var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                            $('c[r=A1] t', sheet).text( 'Data Pembina');
+                            $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
+                        }
+                    }
+                ],
         });
 
         new $.fn.dataTable.FixedHeader( $dTable );
