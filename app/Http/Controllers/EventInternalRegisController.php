@@ -97,4 +97,21 @@ class EventInternalRegisController extends Controller
             "message" => "Status berhasil di update",
         ]);
     }
+
+    public function delete($id_regis)
+    {
+        try {
+            EventInternalRegistration::destroy($id_regis);
+
+            return response()->json([
+                "status" => 1,
+                "message" => "Pendaftaran berhasil dihapus",
+            ]);
+        } catch (\Throwable $err) {
+            return response()->json([
+                "status" => 0,
+                "message" => "Pendaftaran berhasil dihapus",
+            ]);
+        }
+    }
 }

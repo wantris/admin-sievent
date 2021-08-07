@@ -38,6 +38,7 @@ class AuthController extends Controller
             }
         } elseif ($request->role == "wadir3") {
             $check = Pengguna::where('username', $username)->first();
+
             if ($check) {
                 if (Hash::check($password, $check->password)) {
                     Session::put('is_admin', '0');

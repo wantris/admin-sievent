@@ -350,6 +350,8 @@ class EventInternalController extends Controller
             return $events;
         } catch (\Throwable $err) {
             $events = collect();
+
+            return $events;
         }
     }
 

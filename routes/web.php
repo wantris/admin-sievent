@@ -203,9 +203,31 @@ Route::group(['prefix' => 'registration'], function () {
     Route::get('/eventinternal', 'EventInternalRegisController@index')->name('registrations.eventinternal.index');
     Route::get('/eventinternal/idevent/{id_eventinternal}', 'EventInternalRegisController@getByEvent')->name('registrations.eventinternal.getbyevent');
     Route::post('/eventinternal/updatestatus/{id_regis}', 'EventInternalRegisController@updateStatus')->name('registrations.eventinternal.updatestatus');
+    Route::delete('/eventinternal/delete/{id_regis}', 'EventInternalRegisController@delete')->name('registrations.eventinternal.delete');
 
     // eventeksternal
     Route::get('/eventeksternal', 'EventEksternalRegisController@index')->name('registrations.eventeksternal.index');
     Route::post('/eventeksternal/updatestatus/{id_regis}', 'EventEksternalRegisController@updateStatus')->name('registrations.eventeksternal.updatestatus');
     Route::get('/eventeksternal/idevent/{id_eventeksternal}', 'EventEksternalRegisController@getByEvent')->name('registrations.eventeksternal.getbyevent');
+});
+
+
+// Website Settings
+
+// ============== Slider =====================
+Route::group(['prefix' => 'slider'], function () {
+    Route::get('/', 'sliderController@index')->name('slider.index');
+    Route::post('/add', 'sliderController@save')->name('slider.save');
+    Route::post('/update/{id_slider}', 'sliderController@update')->name('slider.update');
+    Route::get('/delete/{id_slider}', 'sliderController@delete')->name('slider.delete');
+});
+
+// ============== blog =====================
+Route::group(['prefix' => 'blog'], function () {
+    Route::get('/', 'blogController@index')->name('blog.index');
+    Route::get('/add', 'blogController@add')->name('blog.add');
+    Route::post('/add', 'blogController@save')->name('blog.save');
+    Route::get('/edit/{slug}', 'blogController@edit')->name('blog.edit');
+    Route::post('/update/{id_blog}', 'blogController@update')->name('blog.update');
+    Route::get('/delete/{id_blog}', 'blogController@delete')->name('blog.delete');
 });

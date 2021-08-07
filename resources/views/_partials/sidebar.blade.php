@@ -66,5 +66,10 @@
           <li><a class="nav-link" href="{{route('registrations.eventeksternal.index')}}">Event Eksternal</a></li>
         </ul>
       </li>
+      @if (Session::get('is_admin') == "1")
+      <li class="menu-header">Pengaturan Website</li>
+      <li><a class="nav-link" href="{{route('slider.index')}}"><i class="fas fa-sliders-h"></i><span>Slider</span></a></li>
+      <li><a class="nav-link" href="{{route('blog.index')}}"><i class="fas fa-blog"></i><span>Blog</span></a></li>
+      @endif
   </aside>
 </div>

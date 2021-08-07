@@ -60,7 +60,6 @@
                                         @endif
                                     </td>
                                     <td>{{$regis->event_internal_ref->nama_event}}</td>
-                                    <td></td>
                                     <td>
                                         @if ($regis->status == "0")
                                             <a href="#" class="btn btn-warning" style="font-size: 12px">Belum</a> 
@@ -397,8 +396,8 @@
         $('#modal-body-detail').html(html);
     }
 
-    const deleteTim = (id_tim) => {
-        let url = "/team/delete/"+id_tim;
+    const deleteTim = (id_regis) => {
+        let url = "/registration/eventinternal/delete/"+id_regis;
         event.preventDefault();
         Notiflix.Confirm.Show( 
             'Pendaftaran Event',
@@ -412,16 +411,17 @@
                         type: 'delete', 
                         dataType: "JSON",
                         data: {
-                            "id_tim": id_tim 
+                            "id_regis": id_regis 
                         },
                         success: function (response){
                             console.log(response.status); 
                             if(response.status == 1){
                                 Notiflix.Notify.Success(response.message);
-                                $('#tr_' + id_tim).remove();
+                                $('#tr_' + id_regis).remove();
                             }
                         },
                         error: function(xhr) {
+                            console.log(xhr);
                             Notiflix.Notify.Failure('Ooopss');
                         }
                 });
