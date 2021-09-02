@@ -273,6 +273,7 @@ class ormawaController extends Controller
             return $ormawas;
         } catch (\Throwable $err) {
             $ormawas = collect();
+            return $ormawas;
         }
     }
 

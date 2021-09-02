@@ -9,15 +9,23 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-12 d-flex">
+                        <a href="{{route('registrations.eventeksternal.exportExcel',$event->id_event_eksternal)}}" class="btn btn-success mr-2">Excel</a>
+                        <a href="{{route('registrations.eventeksternal.exportPdf',$event->id_event_eksternal)}}" class="btn btn-success">PDF</a>
+                    </div>
+                </div>
                 <table class="table table-bordered nowrap" id="table-pendaftaran" style="width: 100%">
                     <thead>
                         <tr>
                             <th>ID Pendaftaran</th>
                             <th>ID Tim</th>
-                            <th >Nama Peserta/Ketua</th>
+                            <th>Nama Peserta/Ketua</th>
                             <th>Event</th>
                             <th>Sudah Tervalidasi</th>
                             <th>Status Pendaftar</th>
+                            <th>Tahapan</th>
+                            <th>Tahapan Terakhir</th>
                             <th>Tanggal</th>
                             <th class="table-plus datatable-nosort">Action</th>
                         </tr>
@@ -30,7 +38,7 @@
                                     <td></td>
                                     <td>
                                         @if ($regis->nim)
-                                            @if ($regis->mahasiswa_ref)
+                                            @if ($regis->mahasiswa_ref || $regis->mahasiswa_ref->count() > 0)
                                                 {{$regis->mahasiswa_ref->mahasiswa_nama}}
                                             @else
                                                 {{$regis->nim}}
@@ -49,6 +57,18 @@
                                     <td>
                                         Mahasiswa Polindra
                                     </td>
+                                    <td>
+                                        @if ($regis->tahapan_regis_ref->count() > 0)
+                                            @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
+                                            <i class="fas fa-fire text-danger font-weight-bold"></i>
+                                            @endforeach
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($regis->tahapan_regis_ref->count() > 0)
+                                            {{$regis->tahapan_regis_ref[0]->tahapan_event_eksternal->nama_tahapan}}
+                                        @endif
+                                    </td>
                                     <td>{{ date("d/m/Y", strtotime($regis->created_at)) }}</td>
                                     <td>
                                         <div class="btn-group">
@@ -57,11 +77,12 @@
                                             </button>
                                             <div class="dropdown-menu dropdown-action">
                                                 @if ($regis->status == "1")
-                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_internal_registration}}, '0')" href="#"><i class="fas fa-ban mr-2"></i>Buat Tidak Tervalidasi</a>
+                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_eksternal_registration}}, '0')" href="#"><i class="fas fa-ban mr-2"></i>Buat Tidak Tervalidasi</a>
                                                 @else
-                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_internal_registration}}, '1')" href="#"><i class="fas fa-check-circle-2"></i>Buat Tervalidasi</a>
+                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_eksternal_registration}}, '1')" href="#"><i class="fas fa-check-circle-2"></i>Buat Tervalidasi</a>
                                                 @endif
-                                                <a class="dropdown-item dropdown-action-item" onclick="deleteTim({{$regis->id_event_internal_registration}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                                <a class="dropdown-item dropdown-action-item" href="{{route('tahapan.eventeksternal.pendaftaran.save',['eventid'=>$regis->event_eksternal_id,'regisid'=>$regis->id_event_eksternal_registration])}}"><i class="fas fa-fire mr-2"></i>Ke Tahap Selanjutnya</a>
+                                                <a class="dropdown-item dropdown-action-item" onclick="deleteTim({{$regis->id_event_eksternal_registration}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
                                             </div>
                                         </div>
                                     </td>
@@ -74,7 +95,7 @@
                                         @foreach ($regis->tim_ref->tim_detail_ref as $detail)
                                             @if ($detail->role == "ketua")
                                                 @if ($detail->nim)
-                                                    @if ($detail->mahasiswa_ref)
+                                                    @if ($detail->mahasiswa_ref|| $regis->mahasiswa_ref->count() > 0)
                                                         {{$detail->mahasiswa_ref->mahasiswa_nama}}
                                                     @else
                                                         {{$detail->nim}}
@@ -96,11 +117,17 @@
                                             @if ($detail->role == "ketua")
                                                 @if ($detail->nim)
                                                     Mahasiswa Polindra
-                                                @else
-                                                    Partisipan Eksternal
                                                 @endif
                                             @endif
                                         @endforeach  
+                                    </td>
+                                    <td>
+                                        @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
+                                            <i class="fas fa-fire text-danger font-weight-bold"></i>
+                                        @endforeach
+                                    </td>
+                                    <td>
+                                        {{$regis->tahapan_regis_ref[0]->tahapan_event_eksternal->nama_tahapan}}
                                     </td>
                                     <td>{{ date("d/m/Y", strtotime($regis->created_at)) }}</td>
                                     <td>
@@ -118,6 +145,7 @@
                                                 @else
                                                     <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_eksternal_registration}}, '1')" href="#"><i class="fas fa-check-circle-2"></i>Buat Tervalidasi</a>
                                                 @endif
+                                                <a class="dropdown-item dropdown-action-item" href="{{route('tahapan.eventeksternal.pendaftaran.save',['eventid'=>$regis->event_eksternal_id,'regisid'=>$regis->id_event_eksternal_registration])}}"><i class="fas fa-fire mr-2"></i>Ke Tahap Selanjutnya</a>
                                                 <a class="dropdown-item dropdown-action-item" onclick="deleteTim({{$regis->id_event_eksternal_registration}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
                                             </div>
                                         </div>
@@ -172,102 +200,14 @@
 
 
 <script>
-    var start_date;
-    var end_date;
-    var bulan = ['', 'Januari', 'Februari', 'Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-    var start_month;
-    var end_month;
-
-    var DateFilterFunction = (function (oSettings, aData, iDataIndex) {
-        var dateStart = parseDateValue(start_date);
-        var dateEnd = parseDateValue(end_date);
-        var evalDate= parseDateValue(aData[5]);
-       
-        if ( ( isNaN( dateStart ) && isNaN( dateEnd ) ) ||
-            ( isNaN( dateStart ) && evalDate <= dateEnd ) ||
-            ( dateStart <= evalDate && isNaN( dateEnd ) ) ||
-            ( dateStart <= evalDate && evalDate <= dateEnd ) )
-        {
-            return true;
-        }
-        return false;
-    });
-
-    function parseDateValue(rawDate) {
-        var dateArray= rawDate.split("/");
-        var parsedDate= new Date(dateArray[2], parseInt(dateArray[1])-1, dateArray[0]);  // -1 because months are from 0 to 11   
-        return parsedDate;
-    }   
-
-    function convertStart(start_date){
-        start_date = start_date.split("/").reverse().join("-");
-        var parts_start = start_date.split("-");
-        start_month = parts_start[2] + " " + bulan[parseInt(parts_start[1])] + " "+ parts_start[0];
-        console.log(start_month, parseInt(parts_start[1]));
-    }
-
-
-    function convertEnd(end_date){
-        end_date = end_date.split("/").reverse().join("-");
-        var parts_end = end_date.split("-");
-        end_month = parts_end[2] + " " + bulan[parseInt(parts_end[1])] + " "+ parts_end[0];
-    }
 
     $(document).ready(function () {
         var $dTable = $('#table-pendaftaran').DataTable({
-            responsive: true,
-            "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>",
-                buttons: [   
-                    {
-                        extend: 'excelHtml5',
-                        exportOptions: {
-                            columns: [1, 2, 3, 4]
-                        },
-                        className:'btnExcel',
-                        customize: function ( xlsx ) {
-                            var sheet = xlsx.xl.worksheets['sheet1.xml'];
-                            if(start_date != null && end_date != null){
-                                convertStart(String(start_date));
-                                convertEnd(String(end_date));
-                                $('c[r=A1] t', sheet).text( 'Data Pendaftar '+ start_month + " - "+ end_month);
-                                $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
-                            }else{
-                                $('c[r=A1] t', sheet).text( 'Data Pendaftar');
-                                $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
-                            }
-                        }
-                    }
-                ],
+            responsive: true
         });
 
         new $.fn.dataTable.FixedHeader( $dTable );
 
-        //menambahkan daterangepicker di dalam datatables
-        $("div.datesearchbox").html('<div class="input-group mb-3"> <div class="input-group-addon"> <i class="glyphicon glyphicon-calendar"></i> </div><input type="text" class="form-control pull-right" id="datesearch" placeholder="Berdasarkan Tanggal.."> </div>');
-
-        document.getElementsByClassName("datesearchbox")[0].style.textAlign = "right";
-
-        $('#datesearch').daterangepicker({
-            autoUpdateInput: false,
-            useCurrent: false
-
-        });
-
-        $('#datesearch').on('apply.daterangepicker', function(ev, picker) {
-            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-            start_date=picker.startDate.format('DD/MM/YYYY');
-            end_date=picker.endDate.format('DD/MM/YYYY');
-            $.fn.dataTableExt.afnFiltering.push(DateFilterFunction);
-            $dTable.draw();
-        });
-
-        $('#datesearch').on('cancel.daterangepicker', function(ev, picker) {
-            $(this).val('');
-            start_date='';
-            end_date='';
-            $.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(DateFilterFunction, 1));
-            $dTable.draw();
-        });
     });
 
     $.ajaxSetup({

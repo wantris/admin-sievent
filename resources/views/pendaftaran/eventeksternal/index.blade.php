@@ -29,6 +29,8 @@
                             <th>Event</th>
                             <th>Sudah Tervalidasi</th>
                             <th>Status Pendaftar</th>
+                            <th>Tahapan</th>
+                            <th>Tahapan Terakhir</th>
                             <th>Tanggal</th>
                             <th class="table-plus datatable-nosort">Action</th>
                         </tr>
@@ -60,6 +62,18 @@
                                     </td>
                                     <td>
                                         Mahasiswa Polindra
+                                    </td>
+                                    <td>
+                                        @if ($regis->tahapan_regis_ref->count() > 0)
+                                            @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
+                                            <i class="fas fa-fire text-danger font-weight-bold"></i>
+                                            @endforeach
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($regis->tahapan_regis_ref->count() > 0)
+                                            {{$regis->tahapan_regis_ref[0]->tahapan_event_eksternal->nama_tahapan}}
+                                        @endif
                                     </td>
                                     <td>{{ date("d/m/Y", strtotime($regis->created_at)) }}</td>
                                     <td>
@@ -109,11 +123,21 @@
                                             @if ($detail->role == "ketua")
                                                 @if ($detail->nim)
                                                     Mahasiswa Polindra
-                                                @else
-                                                    Partisipan Eksternal
                                                 @endif
                                             @endif
                                         @endforeach  
+                                    </td>
+                                    <td>
+                                        @if ($regis->tahapan_regis_ref->count() > 0)
+                                            @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
+                                            <i class="fas fa-fire text-danger font-weight-bold"></i>
+                                            @endforeach
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($regis->tahapan_regis_ref->count() > 0)
+                                            {{$regis->tahapan_regis_ref[0]->tahapan_event_eksternal->nama_tahapan}}
+                                        @endif
                                     </td>
                                     <td>{{ date("d/m/Y", strtotime($regis->created_at)) }}</td>
                                     <td>

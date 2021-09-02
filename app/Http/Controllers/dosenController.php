@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DosenSampleExport;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiDosenController;
+use App\Imports\DosenImport;
+use Maatwebsite\Excel\Facades\Excel;
 use GuzzleHttp\Client;
 use App\Pengguna;
 
@@ -41,8 +44,6 @@ class dosenController extends Controller
 
     public function getAllData()
     {
-        $dosens = collect();
-
         try {
             $client = new Client();
             $urlP = env('BACKEND_URL') . "pengguna/dosen";
@@ -53,10 +54,14 @@ class dosenController extends Controller
 
             $dosens = json_decode($responseP->getBody());
 
-            $new_data = $dosens->data;
-
-            return $new_data;
+            if ($dosens->data) {
+                return $dosens->data;
+            } else {
+                $dosens = collect();
+                return collect();
+            }
         } catch (\Throwable $err) {
+            $dosens = collect();
             return $dosens;
         }
     }
@@ -80,6 +85,30 @@ class dosenController extends Controller
             return $new_data;
         } catch (\Throwable $err) {
             return $dosen;
+        }
+    }
+
+    public function exportSample()
+    {
+        return Excel::download(new DosenSampleExport, 'Dosen_sample.xlsx');
+    }
+
+    public function import(Request $request)
+    {
+        try {
+            $file = $request->file('file');
+            $name_file = $file->getClientOriginalName();
+            Excel::import(new DosenImport, $file);
+
+            return response()->json([
+                'success' => 1,
+                'message' => 'Import berhasil'
+            ]);
+        } catch (\Throwable $err) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'Import gagal'
+            ]);
         }
     }
 }

@@ -29,7 +29,7 @@
                             @foreach ($wadir3s as $wadir3)
                             <tr id="tr_{{$wadir3->id_wadir3}}">
                                 <td>{{$loop->iteration}}</td>
-                                <td>{{ucwords($wadir3->dosenRef->dosen_nama)}}</td>
+                                <td>{{ucwords($wadir3->dosenRef->dosen_lengkap_nama)}}</td>
                                 <td>{{$wadir3->nidn}}</td>
                                 <td>
                                     @if ($wadir3->status == "1")

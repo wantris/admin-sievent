@@ -9,6 +9,12 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
+                <div class="row">
+                    <div class="col-12 mb-4 d-flex">
+                        <a href="{{route('registrations.eventinternal.exportExcel', $event->id_event_internal)}}" class="btn btn-success mr-2">Excel</a>
+                        <a href="{{route('registrations.eventinternal.exportPdf', $event->id_event_internal)}}" class="btn btn-success">PDF</a>
+                    </div>
+                </div>
                 <table class="table table-bordered nowrap" id="table-pendaftaran" style="width: 100%">
                     <thead>
                         <tr>
@@ -17,6 +23,8 @@
                             <th >Nama Peserta/Ketua</th>
                             <th>Event</th>
                             <th>Sudah Tervalidasi</th>
+                            <th>Tahapan</th>
+                            <th>Tahapan Terakhir</th>
                             <th>Status Pendaftar</th>
                             <th>Tanggal</th>
                             <th class="table-plus datatable-nosort">Action</th>
@@ -49,6 +57,18 @@
                                         @endif
                                     </td>
                                     <td>
+                                        @if ($regis->tahapan_regis_ref)
+                                            @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
+                                                <i class="fas fa-fire text-danger font-weight-bold"></i>
+                                            @endforeach
+                                        @endif
+                                    </td>
+                                    <td>
+                                       @if ($regis->tahapan_regis_ref)
+                                        {{$regis->tahapan_regis_ref[0]->tahapan_event_internal->nama_tahapan}}
+                                       @endif
+                                    </td>
+                                    <td>
                                         @if ($regis->nim)
                                             Mahasiswa Polindra
                                         @else
@@ -62,11 +82,16 @@
                                                 Action
                                             </button>
                                             <div class="dropdown-menu dropdown-action">
+                                                @php
+                                                    $tahapan_json = json_encode($regis->tahapan_regis_ref);
+                                                @endphp
+                                                <a class="dropdown-item dropdown-action-item" data-toggle="modal" data-target="#exampleModalCenter" href="#"><i class="fas fa-shoe-prints mr-2"></i>Tahapan</a>
                                                 @if ($regis->status == "1")
                                                     <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_internal_registration}}, '0')" href="#"><i class="fas fa-ban mr-2"></i>Buat Tidak Tervalidasi</a>
                                                 @else
                                                     <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_internal_registration}}, '1')" href="#"><i class="fas fa-check-circle-2"></i>Buat Tervalidasi</a>
                                                 @endif
+                                                <a class="dropdown-item dropdown-action-item" href="{{route('tahapan.eventinternal.pendaftaran.save',['eventid'=>$regis->event_internal_id,'regisid'=>$regis->id_event_internal_registration])}}"><i class="fas fa-fire mr-2"></i>Ke Tahap Selanjutnya</a>
                                                 <a class="dropdown-item dropdown-action-item" onclick="deleteTim({{$regis->id_event_internal_registration}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
                                             </div>
                                         </div>
@@ -100,6 +125,18 @@
                                         @endif
                                     </td>
                                     <td>
+                                        @if ($regis->tahapan_regis_ref)
+                                            @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
+                                                <i class="fas fa-fire text-danger font-weight-bold"></i>
+                                            @endforeach
+                                        @endif
+                                    </td>
+                                    <td>
+                                       @if ($regis->tahapan_regis_ref)
+                                        {{$regis->tahapan_regis_ref[0]->tahapan_event_internal->nama_tahapan}}
+                                       @endif
+                                    </td>
+                                    <td>
                                         @foreach ($regis->tim_ref->tim_detail_ref as $detail)
                                             @if ($detail->role == "ketua")
                                                 @if ($detail->nim)
@@ -114,6 +151,7 @@
                                     <td>
                                         @php
                                             $tim_detail_json = json_encode($regis->tim_ref->tim_detail_ref);
+                                            $tahapan_json = json_encode($regis->tahapan_regis_ref);
                                         @endphp
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -121,11 +159,13 @@
                                             </button>
                                             <div class="dropdown-menu dropdown-action">
                                                 <a class="dropdown-item dropdown-action-item" onclick="detailTim({{$tim_detail_json}})" href="#"><i class="fas fa-eye mr-2"></i>Detail Tim</a>
+                                                <a class="dropdown-item dropdown-action-item" onclick="seeStep({{$tahapan_json}})" href="#"><i class="fas fa-shoe-prints mr-2"></i>Tahapan</a>
                                                 @if ($regis->status == "1")
                                                     <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_internal_registration}}, '0')" href="#"><i class="fas fa-ban mr-2"></i>Buat Tidak Tervalidasi</a>
                                                 @else
                                                     <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_internal_registration}}, '1')" href="#"><i class="fas fa-check-circle-2"></i>Buat Tervalidasi</a>
                                                 @endif
+                                                <a class="dropdown-item dropdown-action-item" href="{{route('tahapan.eventinternal.pendaftaran.save',['eventid'=>$regis->event_internal_id,'regisid'=>$regis->id_event_internal_registration])}}"><i class="fas fa-fire mr-2"></i>Ke Tahap Selanjutnya</a>
                                                 <a class="dropdown-item dropdown-action-item" onclick="deleteTim({{$regis->id_event_internal_registration}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
                                             </div>
                                         </div>
@@ -174,108 +214,48 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal -->
+<div class="modal fade" id="tahapanModal" tabindex="1500" role="dialog" aria-labelledby="tahapanModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tahapanModalTitle">Tahapan Peserta</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-12">
+                  <div class="activities" id="tahapan-list-modal">
+                  </div>
+                </div>
+              </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
 @endsection
 
 @push('script')
 
 
 <script>
-    var start_date;
-    var end_date;
-    var bulan = ['', 'Januari', 'Februari', 'Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-    var start_month;
-    var end_month;
-
-    var DateFilterFunction = (function (oSettings, aData, iDataIndex) {
-        var dateStart = parseDateValue(start_date);
-        var dateEnd = parseDateValue(end_date);
-        var evalDate= parseDateValue(aData[5]);
-       
-        if ( ( isNaN( dateStart ) && isNaN( dateEnd ) ) ||
-            ( isNaN( dateStart ) && evalDate <= dateEnd ) ||
-            ( dateStart <= evalDate && isNaN( dateEnd ) ) ||
-            ( dateStart <= evalDate && evalDate <= dateEnd ) )
-        {
-            return true;
-        }
-        return false;
-    });
-
-    function parseDateValue(rawDate) {
-        var dateArray= rawDate.split("/");
-        var parsedDate= new Date(dateArray[2], parseInt(dateArray[1])-1, dateArray[0]);  // -1 because months are from 0 to 11   
-        return parsedDate;
-    }   
-
-    function convertStart(start_date){
-        start_date = start_date.split("/").reverse().join("-");
-        var parts_start = start_date.split("-");
-        start_month = parts_start[2] + " " + bulan[parseInt(parts_start[1])] + " "+ parts_start[0];
-        console.log(start_month, parseInt(parts_start[1]));
-    }
-
-
-    function convertEnd(end_date){
-        end_date = end_date.split("/").reverse().join("-");
-        var parts_end = end_date.split("-");
-        end_month = parts_end[2] + " " + bulan[parseInt(parts_end[1])] + " "+ parts_end[0];
-    }
 
     $(document).ready(function () {
         var $dTable = $('#table-pendaftaran').DataTable({
             responsive: true,
-            "dom":"<'row'<'col-sm-3'l>B<'col-sm-3' <'datesearchbox'>><'col-sm-3'f>>",
-                buttons: [   
-                    {
-                        extend: 'excelHtml5',
-                        exportOptions: {
-                            columns: [1, 2, 3, 4]
-                        },
-                        className:'btnExcel',
-                        customize: function ( xlsx ) {
-                            var sheet = xlsx.xl.worksheets['sheet1.xml'];
-                            if(start_date != null && end_date != null){
-                                convertStart(String(start_date));
-                                convertEnd(String(end_date));
-                                $('c[r=A1] t', sheet).text( 'Data Pendaftar '+ start_month + " - "+ end_month);
-                                $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
-                            }else{
-                                $('c[r=A1] t', sheet).text( 'Data Pendaftar');
-                                $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
-                            }
-                        }
-                    }
-                ],
+           
         });
 
         new $.fn.dataTable.FixedHeader( $dTable );
 
-        //menambahkan daterangepicker di dalam datatables
-        $("div.datesearchbox").html('<div class="input-group mb-3"> <div class="input-group-addon"> <i class="glyphicon glyphicon-calendar"></i> </div><input type="text" class="form-control pull-right" id="datesearch" placeholder="Berdasarkan Tanggal.."> </div>');
 
-        document.getElementsByClassName("datesearchbox")[0].style.textAlign = "right";
-
-        $('#datesearch').daterangepicker({
-            autoUpdateInput: false,
-            useCurrent: false
-
-        });
-
-        $('#datesearch').on('apply.daterangepicker', function(ev, picker) {
-            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-            start_date=picker.startDate.format('DD/MM/YYYY');
-            end_date=picker.endDate.format('DD/MM/YYYY');
-            $.fn.dataTableExt.afnFiltering.push(DateFilterFunction);
-            $dTable.draw();
-        });
-
-        $('#datesearch').on('cancel.daterangepicker', function(ev, picker) {
-            $(this).val('');
-            start_date='';
-            end_date='';
-            $.fn.dataTable.ext.search.splice($.fn.dataTable.ext.search.indexOf(DateFilterFunction, 1));
-            $dTable.draw();
-        });
     });
 
     $.ajaxSetup({
@@ -368,6 +348,35 @@
 
         $('#modal-body-detail').html(html);
     }
+
+    const seeStep = (tahapans) => {
+        event.preventDefault();
+        let html = ``;
+
+        tahapans.forEach(function(tahapan,index) {
+            let date = new Date(tahapan.created_at);
+            let created_at = date.getFullYear()+'-' + (date.getMonth()+1) + '-'+date.getDate();
+            html += `
+                <div class="activity">
+                    <div class="activity-icon bg-primary text-white shadow-primary" style="border-bottom:2px solid #126afe">
+                        <i class="fas fa-shoe-prints"></i>
+                    </div>
+                    <div class="activity-detail">
+                    <div class="mb-2">
+                        <span class="text-job text-primary"><i class="fas fa-clock mr-2"></i>${created_at}</span>
+                        <span class="bullet"></span>
+                    </div>
+                    <p>${tahapan.tahapan_event_internal.nama_tahapan}</p>
+                    </div>
+                </div>
+            `;
+
+            $('#tahapan-list-modal').html(html);
+            $('#tahapanModal').appendTo("body").modal('show');
+        });
+
+    }
+
 
     const deleteTim = (id_tim) => {
         let url = "/team/delete/"+id_tim;

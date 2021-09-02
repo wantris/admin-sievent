@@ -61,10 +61,6 @@
                                         <a class="dropdown-item dropdown-action-item" onclick="deleteDosen({{$dosen->nidn}})"href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
                                     </div>
                                 </div>
-                                <a href=""
-                                    class="btn btn-secondary d-inline-block mb-1" title="Edit"><i class="fas fa-pen-square"></i></a>
-                                <a href="#" onclick="deleteMahasiswa({{$dosen->nidn}})"
-                                    class="btn btn-danger mt-2 d-inline-block mb-1" title="Hapus"><i class="fas fa-trash-alt"></i></a>
                             </td>
                         </tr>
                         @endforeach
@@ -74,6 +70,9 @@
         </div>
     </div>
 </div>
+
+{{-- upload inp --}}
+<input type="file" name="" onchange="importDosen()" id="file-inp" class="d-none">
 @endsection
 
 @push('script')
@@ -146,6 +145,13 @@
                                 $('c[r=A1] t', sheet).text( 'Data Pengguna Dosen');
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }
+                        }
+                    },
+                    {
+                        text: 'Import',
+                        className:'btnExcel',
+                        action: function ( e, dt, node, config ) {
+                            $('#file-inp').trigger('click');
                         }
                     }
                 ],
@@ -234,6 +240,34 @@
             }, function(){
                  // No button callback alert('If you say so...'); 
             } ); 
+    }
+
+    const importDosen = () => {
+        var fd = new FormData();
+        var files = $('#file-inp')[0].files;
+        if(files.length > 0 ){
+            fd.append('file',files[0]);
+            Notiflix.Loading.Hourglass({ svgColor:"#327ec6", }); 
+            $.ajax({
+                url: '/dosen/import',
+                type: 'post',
+                data: fd,
+                contentType: false,
+                processData: false,
+                success: function(response){
+                    if(response.success){
+                        Notiflix.Loading.Remove();
+                        location.reload();
+                    }else{
+                        Notiflix.Notify.Failure(response.message);
+                    }
+                    
+                },
+                error:function(err){
+                    Notiflix.Notify.Failure('Ooopss');
+                },
+            });
+        }
     }
 </script>
 @endpush

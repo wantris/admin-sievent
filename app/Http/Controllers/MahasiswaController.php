@@ -9,16 +9,18 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MahasiswaExport;
+use App\Exports\MahasiswaSampleExport;
+use App\Imports\MahasiswaImport;
 
 class MahasiswaController extends Controller
 {
     public function index()
     {
+
         $title = "Akun Mahasiswa";
         $headerTitle = "Data Akun Mahasiswa";
 
         $mahasiswas = $this->getAllData();
-        $api_mhs = new ApiMahasiswaController;
 
         return view('akun_mahasiswa.index', compact('title', 'headerTitle', 'mahasiswas'));
     }
@@ -157,5 +159,29 @@ class MahasiswaController extends Controller
     public function export()
     {
         return Excel::download(new MahasiswaExport, 'Data_Pengguna_Mahasiswa.xlsx');
+    }
+
+    public function exportSample()
+    {
+        return Excel::download(new MahasiswaSampleExport, 'Mahasiswa_sample.xlsx');
+    }
+
+    public function import(Request $request)
+    {
+        try {
+            $file = $request->file('file');
+            $name_file = $file->getClientOriginalName();
+            Excel::import(new MahasiswaImport, $file);
+
+            return response()->json([
+                'success' => 1,
+                'message' => 'Import berhasil'
+            ]);
+        } catch (\Throwable $err) {
+            return response()->json([
+                'success' => 0,
+                'message' => 'Import gagal'
+            ]);
+        }
     }
 }

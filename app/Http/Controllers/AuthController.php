@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Admin;
 use App\Pengguna;
+use App\Wadir3;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
@@ -37,19 +38,24 @@ class AuthController extends Controller
                 return redirect()->back()->with('failed', 'Username tidak ada');
             }
         } elseif ($request->role == "wadir3") {
-            $check = Pengguna::where('username', $username)->first();
+            $check_wadir = Wadir3::where('nidn', $username)->where('status', 1)->first();
+            if ($check_wadir) {
+                $check = Pengguna::where('username', $username)->first();
 
-            if ($check) {
-                if (Hash::check($password, $check->password)) {
-                    Session::put('is_admin', '0');
-                    Session::put('is_wadir3', '1');
-                    Session::put('id_pengguna', $check->id_pengguna);
-                    return redirect()->route('dashboard');
+                if ($check) {
+                    if (Hash::check($password, $check->password)) {
+                        Session::put('is_admin', '0');
+                        Session::put('is_wadir3', '1');
+                        Session::put('id_pengguna', $check->id_pengguna);
+                        return redirect()->route('dashboard');
+                    } else {
+                        return redirect()->back()->with('failed', 'Password salah');
+                    }
                 } else {
-                    return redirect()->back()->with('failed', 'Password salah');
+                    return redirect()->back()->with('failed', 'Username tidak ada');
                 }
             } else {
-                return redirect()->back()->with('failed', 'Username tidak ada');
+                return redirect()->back()->with('failed', 'Maaf tidak bisa');
             }
         }
     }

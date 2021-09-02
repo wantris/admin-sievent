@@ -72,6 +72,10 @@
         </div>
     </div>
 </div>
+
+{{-- upload inp --}}
+<input type="file" name="" onchange="importMahasiswa()" id="file-inp" class="d-none">
+
 @endsection
 
 @push('script')
@@ -143,6 +147,13 @@
                                 $('c[r=A1] t', sheet).text( 'Data Akun Mahasiswa');
                                 $('row:first c', sheet).attr( 's', '51', '2' ); // first row is bold
                             }
+                        }
+                    },
+                    {
+                        text: 'Import',
+                        className:'btnExcel',
+                        action: function ( e, dt, node, config ) {
+                            $('#file-inp').trigger('click');
                         }
                     }
                 ],
@@ -238,5 +249,35 @@
                  // No button callback alert('If you say so...'); 
             } ); 
     }
+
+    const importMahasiswa = () => {
+        var fd = new FormData();
+        var files = $('#file-inp')[0].files;
+        if(files.length > 0 ){
+            fd.append('file',files[0]);
+            Notiflix.Loading.Hourglass({ svgColor:"#327ec6", }); 
+            $.ajax({
+                url: '/mahasiswa/import',
+                type: 'post',
+                data: fd,
+                contentType: false,
+                processData: false,
+                success: function(response){
+                    if(response.success){
+                        Notiflix.Loading.Remove();
+                        location.reload();
+                    }else{
+                        Notiflix.Notify.Failure(response.message);
+                    }
+                    
+                },
+                error:function(err){
+                    Notiflix.Notify.Failure('Ooopss');
+                },
+            });
+        }
+    }
+
+
 </script>
 @endpush

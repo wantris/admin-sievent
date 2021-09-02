@@ -6,7 +6,11 @@ use App\Ormawa;
 use Illuminate\Http\Request;
 use App\EventEksternal;
 use App\EventEksternalRegistration;
+use App\Exports\ListPesertaEksternalExport;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
 
 class EventEksternalRegisController extends Controller
 {
@@ -25,7 +29,7 @@ class EventEksternalRegisController extends Controller
 
     public function getByEvent($id_eventeksternal)
     {
-        $event = EventEksternal::select('nama_event')->first();
+        $event = EventEksternal::select('nama_event', 'id_event_eksternal')->first();
         if ($event) {
             $title = "Pendaftaran Event";
             $headerTitle = "Data Pendaftaran Event " . $event->nama_event;
@@ -94,5 +98,49 @@ class EventEksternalRegisController extends Controller
             "status" => 1,
             "message" => "Status berhasil di update",
         ]);
+    }
+
+    public function exportExcel($id_eventeksternal)
+    {
+        $event = EventEksternal::find($id_eventeksternal);
+        if ($event) {
+            return Excel::download(new ListPesertaEksternalExport($id_eventeksternal), 'Peserta ' . $event->nama_event . '.xlsx');
+        }
+
+        return redirect()->back()->with('failed', 'Event tidak ada');
+    }
+
+    public function exportPdf($id_eventeksternal)
+    {
+        $event = EventEksternal::find($id_eventeksternal);
+        $pendaftaran = $this->getPendaftarById($id_eventeksternal);
+
+        $pdf = PDF::loadview('exports.pdf.list_peserta_eksternal_pdf', ['event' => $event, 'pendaftaran' => $pendaftaran])->setPaper('a4', 'landscape');
+
+        return $pdf->download('data_peserta.pdf');
+    }
+
+
+    public function getPendaftarById($id_eventeksternal)
+    {
+        try {
+            $client = new Client();
+            $urlP = env('BACKEND_URL') . "registration/eventeksternal/export";
+
+            $responseP = $client->request('GET', $urlP, [
+                'verify'  => false,
+                'query' => [
+                    'eventid' => $id_eventeksternal,
+                ]
+            ]);
+
+            $body = json_decode($responseP->getBody());
+
+            return $body->data;
+        } catch (ClientException $exception) {
+            $response = $exception->getResponse();
+            $responseBodyAsString = json_decode($response->getBody());
+            return redirect()->back()->with('failed', $responseBodyAsString->message);
+        }
     }
 }

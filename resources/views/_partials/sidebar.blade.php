@@ -70,6 +70,7 @@
       <li class="menu-header">Pengaturan Website</li>
       <li><a class="nav-link" href="{{route('slider.index')}}"><i class="fas fa-sliders-h"></i><span>Slider</span></a></li>
       <li><a class="nav-link" href="{{route('blog.index')}}"><i class="fas fa-blog"></i><span>Blog</span></a></li>
+      <li><a class="nav-link" href="{{route('testimoni.index')}}"><i class="fas fa-quote-right"></i><span>Testimoni</span></a></li>
       @endif
   </aside>
 </div>

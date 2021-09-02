@@ -23,7 +23,7 @@ class wadir3Controller extends Controller
 
             // call API
             $api_dosen = new ApiDosenController;
-            $dosen = $api_dosen->getDosenByNidn($wadir3->nidn);
+            $dosen = $api_dosen->getDosenOnlySomeField($wadir3->nidn);
 
             if ($dosen) {
                 $wadir3->dosenRef = $dosen;

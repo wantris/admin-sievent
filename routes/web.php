@@ -132,6 +132,8 @@ Route::group(['prefix' => 'mahasiswa'], function () {
     Route::delete('/delete/{nim}', 'mahasiswaController@delete')->name('mahasiswa.delete');
 
     Route::get('/export', 'mahasiswaController@export')->name('mahasiswa.export');
+    Route::post('/import', 'mahasiswaController@import')->name('mahasiswa.import');
+    Route::get('/export/sample', 'mahasiswaController@exportSample')->name('mahasiswa.export');
 });
 
 // ================== dosen ===============
@@ -142,6 +144,9 @@ Route::group(['prefix' => 'dosen'], function () {
     Route::get('/edit/{nidn}', 'dosenController@edit')->name('dosen.edit');
     Route::patch('/update/{nidn}', 'dosenController@update')->name('dosen.update');
     Route::delete('/delete/{nidn}', 'dosenController@delete')->name('dosen.delete');
+
+    Route::get('/export/sample', 'dosenController@exportSample')->name('dosen.export');
+    Route::post('/import', 'dosenController@import')->name('dosen.import');
 });
 
 // ================== pengguna ===============
@@ -204,11 +209,34 @@ Route::group(['prefix' => 'registration'], function () {
     Route::get('/eventinternal/idevent/{id_eventinternal}', 'EventInternalRegisController@getByEvent')->name('registrations.eventinternal.getbyevent');
     Route::post('/eventinternal/updatestatus/{id_regis}', 'EventInternalRegisController@updateStatus')->name('registrations.eventinternal.updatestatus');
     Route::delete('/eventinternal/delete/{id_regis}', 'EventInternalRegisController@delete')->name('registrations.eventinternal.delete');
+    Route::get('/eventinternal/export/excel/{id_eventinternal}', 'EventInternalRegisController@exportExcel')->name('registrations.eventinternal.exportExcel');
+    Route::get('/eventinternal/export/pdf/{id_eventinternal}', 'EventInternalRegisController@exportPdf')->name('registrations.eventinternal.exportPdf');
 
     // eventeksternal
     Route::get('/eventeksternal', 'EventEksternalRegisController@index')->name('registrations.eventeksternal.index');
     Route::post('/eventeksternal/updatestatus/{id_regis}', 'EventEksternalRegisController@updateStatus')->name('registrations.eventeksternal.updatestatus');
     Route::get('/eventeksternal/idevent/{id_eventeksternal}', 'EventEksternalRegisController@getByEvent')->name('registrations.eventeksternal.getbyevent');
+    Route::get('/eventeksternal/export/excel/{id_eventeksternal}', 'EventEksternalRegisController@exportExcel')->name('registrations.eventeksternal.exportExcel');
+    Route::get('/eventeksternal/export/pdf/{id_eventeksternal}', 'EventEksternalRegisController@exportPdf')->name('registrations.eventeksternal.exportPdf');
+});
+
+# ============== Tahapan Event ================ #
+Route::group(['prefix' => 'tahapan'], function () {
+    Route::get('/eventinternal', 'tahapanEventInternalController@getByEvent')->name('tahapan.index.byevent');
+    Route::post('/eventinternal/save', 'tahapanEventInternalController@save')->name('tahapan.save');
+    Route::post('/eventinternal/update', 'tahapanEventInternalController@update')->name('tahapan.update');
+    Route::delete('/eventinternal/delete', 'tahapanEventInternalController@delete')->name('tahapan.delete');
+    Route::get('/eventinternal', 'tahapanEventInternalController@getByEvent')->name('tahapan.index.byevent');
+    Route::get('/eventinternal/pendaftaran', 'tahapanEventInternalController@saveRegistrationStep')->name('tahapan.eventinternal.pendaftaran.save');
+    Route::post('/eventinternal/pendaftaran/multiple', 'tahapanEventInternalController@saveRegisStepMultiple')->name('tahapan.eventinternal.pendaftaran.save.multiple');
+
+
+    Route::get('/eventeksternal', 'tahapanEventEksternalController@getByEvent')->name('tahapan.index.byevent');
+    Route::post('/eventeksternal/save', 'tahapanEventEksternalController@save')->name('tahapan.save');
+    Route::post('/eventeksternal/update', 'tahapanEventEksternalController@update')->name('tahapan.update');
+    Route::delete('/eventeksternal/delete', 'tahapanEventEksternalController@delete')->name('tahapan.delete');
+    Route::get('/eventeksternal/pendaftaran', 'tahapanEventEksternalController@saveRegistrationStep')->name('tahapan.eventeksternal.pendaftaran.save');
+    Route::post('/eventeksternal/pendaftaran/multiple', 'tahapanEventEksternalController@saveRegisStepMultiple')->name('tahapan.eventeksternal.pendaftaran.save.multiple');
 });
 
 
@@ -230,4 +258,19 @@ Route::group(['prefix' => 'blog'], function () {
     Route::get('/edit/{slug}', 'blogController@edit')->name('blog.edit');
     Route::post('/update/{id_blog}', 'blogController@update')->name('blog.update');
     Route::get('/delete/{id_blog}', 'blogController@delete')->name('blog.delete');
+});
+
+// ============== Testimoni =====================
+Route::group(['prefix' => 'testimoni'], function () {
+    Route::get('/', 'testimoniController@index')->name('testimoni.index');
+    Route::post('/add', 'testimoniController@save')->name('testimoni.save');
+    Route::post('/update/{id_testimoni}', 'testimoniController@update')->name('testimoni.update');
+    Route::get('/delete/{id_testimoni}', 'testimoniController@delete')->name('testimoni.delete');
+});
+
+// ============== Account =====================
+Route::group(['prefix' => 'account'], function () {
+    Route::get('/', 'accountController@index')->name('account.index');
+    Route::post('/save', 'accountController@postProfile')->name('account.save');
+    Route::get('/delete/{id_account}', 'accountController@delete')->name('account.delete');
 });

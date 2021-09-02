@@ -18,7 +18,7 @@
                             <select name="nidn" id="" class="form-control" required>
                                 <option selected>Pilih Dosen</option>
                                 @foreach ($dosens as $dosen)
-                                    <option value="{{$dosen->dosen_nidn}}">{{ucfirst($dosen->dosen_nama)}}</option>
+                                    <option value="{{$dosen->dosen_nidn}}">{{ucfirst($dosen->dosen_gelar_depan . " " . $dosen->dosen_nama . " " . $dosen->dosen_gelar_belakang)}}</option>
                                 @endforeach
                             </select>                           
                         </div>

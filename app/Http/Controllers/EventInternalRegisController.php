@@ -7,6 +7,9 @@ use App\Ormawa;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use App\EventInternalRegistration;
+use App\Exports\ListPesertaExport;
+use Maatwebsite\Excel\Facades\Excel;
+use PDF;
 
 class EventInternalRegisController extends Controller
 {
@@ -26,7 +29,7 @@ class EventInternalRegisController extends Controller
 
     public function getByEvent($id_eventinternal)
     {
-        $event = EventInternal::select('nama_event')->first();
+        $event = EventInternal::select('nama_event', 'id_event_internal')->first();
         if ($event) {
             $title = "Pendaftaran Event";
             $headerTitle = "Data Pendaftaran Event " . $event->nama_event;
@@ -112,6 +115,51 @@ class EventInternalRegisController extends Controller
                 "status" => 0,
                 "message" => "Pendaftaran berhasil dihapus",
             ]);
+        }
+    }
+
+    public function exportExcel($id_eventinternal)
+    {
+        $event = EventInternal::find($id_eventinternal);
+        if ($event) {
+            return Excel::download(new ListPesertaExport($id_eventinternal), 'Peserta ' . $event->nama_event . '.xlsx');
+        }
+
+        return redirect()->back()->with('failed', 'Event tidak ada');
+    }
+
+
+    public function exportPdf($id_eventinternal)
+    {
+        $event = EventInternal::find($id_eventinternal);
+        $pendaftaran = $this->getPendaftarById($id_eventinternal);
+
+        $pdf = PDF::loadview('exports.pdf.list_peserta_internal_pdf', ['event' => $event, 'pendaftaran' => $pendaftaran])->setPaper('a4', 'landscape');
+
+        return $pdf->download('data_peserta.pdf');
+    }
+
+    public function getPendaftarById($id_eventinternal)
+    {
+
+        try {
+            $client = new Client();
+            $urlP = env('BACKEND_URL') . "registration/eventinternal/export";
+
+            $responseP = $client->request('GET', $urlP, [
+                'verify'  => false,
+                'query' => [
+                    'eventid' => $id_eventinternal,
+                ]
+            ]);
+
+            $body = json_decode($responseP->getBody());
+
+            return $body->data;
+        } catch (ClientException $exception) {
+            $response = $exception->getResponse();
+            $responseBodyAsString = json_decode($response->getBody());
+            return redirect()->back()->with('failed', $responseBodyAsString->message);
         }
     }
 }
