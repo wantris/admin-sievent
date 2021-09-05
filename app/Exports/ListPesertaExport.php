@@ -21,8 +21,8 @@ class ListPesertaExport implements FromView, ShouldAutoSize
 
     public function view(): View
     {
+        $event = EventInternal::with('tahapanRef')->select('nama_event', 'id_event_internal', 'role')->find($this->id_eventinternal);
 
-        $event = EventInternal::select('nama_event')->find($this->id_eventinternal);
         $data = $this->getData();
 
         return view('exports.list_peserta_internal', [

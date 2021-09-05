@@ -43,7 +43,7 @@
                                     </div>
                                     <div class="form-group col-md-5 col-12">
                                         <label>Phone</label>
-                                        <input type="text" class="form-control" name="phone" value="{{$pengguna->email}}">
+                                        <input type="text" class="form-control" name="phone" value="{{$pengguna->phone}}">
                                         <small class="text-muted">Wajib Diisi</small>
                                         <div class="invalid-feedback">
                                             Please fill in the phone

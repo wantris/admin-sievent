@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Ormawa;
 
 class CakupanOrmawa extends Model
 {
@@ -11,6 +10,6 @@ class CakupanOrmawa extends Model
 
     public function ormawaRef()
     {
-        return $this->hasOne(Ormawa::class,  'id_ormawa', 'ormawa_id');
+        return $this->belongsTo(Ormawa::class, 'ormawa_id', 'id_ormawa');
     }
 }

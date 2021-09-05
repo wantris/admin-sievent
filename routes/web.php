@@ -211,6 +211,7 @@ Route::group(['prefix' => 'registration'], function () {
     Route::delete('/eventinternal/delete/{id_regis}', 'EventInternalRegisController@delete')->name('registrations.eventinternal.delete');
     Route::get('/eventinternal/export/excel/{id_eventinternal}', 'EventInternalRegisController@exportExcel')->name('registrations.eventinternal.exportExcel');
     Route::get('/eventinternal/export/pdf/{id_eventinternal}', 'EventInternalRegisController@exportPdf')->name('registrations.eventinternal.exportPdf');
+    Route::get('/eventinternal/sertificate', 'EventInternalRegisController@downloadSertificate')->name('registrations.eventinternal.sertificate.download');
 
     // eventeksternal
     Route::get('/eventeksternal', 'EventEksternalRegisController@index')->name('registrations.eventeksternal.index');
@@ -218,6 +219,7 @@ Route::group(['prefix' => 'registration'], function () {
     Route::get('/eventeksternal/idevent/{id_eventeksternal}', 'EventEksternalRegisController@getByEvent')->name('registrations.eventeksternal.getbyevent');
     Route::get('/eventeksternal/export/excel/{id_eventeksternal}', 'EventEksternalRegisController@exportExcel')->name('registrations.eventeksternal.exportExcel');
     Route::get('/eventeksternal/export/pdf/{id_eventeksternal}', 'EventEksternalRegisController@exportPdf')->name('registrations.eventeksternal.exportPdf');
+    Route::get('/eventeksternal/sertificate', 'EventEksternalRegisController@downloadSertificate')->name('registrations.eventeksternal.sertificate.download');
 });
 
 # ============== Tahapan Event ================ #
@@ -239,6 +241,17 @@ Route::group(['prefix' => 'tahapan'], function () {
     Route::post('/eventeksternal/pendaftaran/multiple', 'tahapanEventEksternalController@saveRegisStepMultiple')->name('tahapan.eventeksternal.pendaftaran.save.multiple');
 });
 
+// export prestasi
+// ============== Account =====================
+Route::group(['prefix' => 'prestasi'], function () {
+    // eventinternal
+    Route::get('/eventinternal', 'prestasiEventInternalController@index')->name('prestasi.eventinternal.index');
+    Route::get('/eventinternal/export/excel', 'prestasiEventInternalController@exportAllExcel')->name('prestasi.eventinternal.excel.all');
+
+    // eventeksternal
+    Route::get('/eventeksternal', 'prestasiEventEksternalController@index')->name('prestasi.eventeksternal.index');
+    Route::get('/eventeksternal/export/excel', 'prestasiEventEksternalController@exportAllExcel')->name('prestasi.eventeksternal.excel.all');
+});
 
 // Website Settings
 

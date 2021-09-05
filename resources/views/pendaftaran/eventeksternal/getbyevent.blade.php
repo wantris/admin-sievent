@@ -9,152 +9,285 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <div class="row mb-4">
-                    <div class="col-12 d-flex">
-                        <a href="{{route('registrations.eventeksternal.exportExcel',$event->id_event_eksternal)}}" class="btn btn-success mr-2">Excel</a>
-                        <a href="{{route('registrations.eventeksternal.exportPdf',$event->id_event_eksternal)}}" class="btn btn-success">PDF</a>
-                    </div>
-                </div>
-                <table class="table table-bordered nowrap" id="table-pendaftaran" style="width: 100%">
-                    <thead>
-                        <tr>
-                            <th>ID Pendaftaran</th>
-                            <th>ID Tim</th>
-                            <th>Nama Peserta/Ketua</th>
-                            <th>Event</th>
-                            <th>Sudah Tervalidasi</th>
-                            <th>Status Pendaftar</th>
-                            <th>Tahapan</th>
-                            <th>Tahapan Terakhir</th>
-                            <th>Tanggal</th>
-                            <th class="table-plus datatable-nosort">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($registrations as $regis)
-                            @if ($regis->event_eksternal_ref->role == "Individu")
-                                <tr id="tr_{{$regis->id_event_eksternal_registration}}">
-                                    <td width="5%">{{$regis->id_event_eksternal_registration}}</td>
-                                    <td></td>
-                                    <td>
-                                        @if ($regis->nim)
-                                            @if ($regis->mahasiswa_ref || $regis->mahasiswa_ref->count() > 0)
-                                                {{$regis->mahasiswa_ref->mahasiswa_nama}}
-                                            @else
-                                                {{$regis->nim}}
-                                            @endif
-                                        @endif
-                                    </td>
-                                    <td>{{$regis->event_eksternal_ref->nama_event}}</td>
-                                    <td></td>
-                                    <td>
-                                        @if ($regis->status == "0")
-                                            <a href="#" class="btn btn-warning" style="font-size: 12px">Belum</a> 
-                                        @else
-                                            <a href="#" class="btn btn-success" style="font-size: 12px">Sudah</a>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        Mahasiswa Polindra
-                                    </td>
-                                    <td>
-                                        @if ($regis->tahapan_regis_ref->count() > 0)
-                                            @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
-                                            <i class="fas fa-fire text-danger font-weight-bold"></i>
-                                            @endforeach
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($regis->tahapan_regis_ref->count() > 0)
-                                            {{$regis->tahapan_regis_ref[0]->tahapan_event_eksternal->nama_tahapan}}
-                                        @endif
-                                    </td>
-                                    <td>{{ date("d/m/Y", strtotime($regis->created_at)) }}</td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                Action
-                                            </button>
-                                            <div class="dropdown-menu dropdown-action">
-                                                @if ($regis->status == "1")
-                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_eksternal_registration}}, '0')" href="#"><i class="fas fa-ban mr-2"></i>Buat Tidak Tervalidasi</a>
-                                                @else
-                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_eksternal_registration}}, '1')" href="#"><i class="fas fa-check-circle-2"></i>Buat Tervalidasi</a>
-                                                @endif
-                                                <a class="dropdown-item dropdown-action-item" href="{{route('tahapan.eventeksternal.pendaftaran.save',['eventid'=>$regis->event_eksternal_id,'regisid'=>$regis->id_event_eksternal_registration])}}"><i class="fas fa-fire mr-2"></i>Ke Tahap Selanjutnya</a>
-                                                <a class="dropdown-item dropdown-action-item" onclick="deleteTim({{$regis->id_event_eksternal_registration}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
-                                            </div>
-                                        </div>
-                                    </td>
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="pendaftar-tab" data-toggle="tab" href="#pendaftar" role="tab" aria-controls="pendaftar" aria-selected="true">Daftar Pendaftar</a>
+                    </li>
+                    @foreach ($event->tahapanRef as $cekTahapan)
+                        @if ($cekTahapan->nama_tahapan == "Upload Sertifikat")
+                            <li class="nav-item">
+                                <a class="nav-link" id="sertifikat-tab" data-toggle="tab" href="#sertifikat" role="tab" aria-controls="sertifikat" aria-selected="false">Peraih Sertifikat</a>
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="pendaftar" role="tabpanel" aria-labelledby="pendaftar-tab">
+                        <div class="row mb-4">
+                            <div class="col-12 d-flex">
+                                <a href="{{route('registrations.eventeksternal.exportExcel',$event->id_event_eksternal)}}" class="btn btn-success mr-2">Excel</a>
+                                <a href="{{route('registrations.eventeksternal.exportPdf',$event->id_event_eksternal)}}" class="btn btn-success">PDF</a>
+                            </div>
+                        </div>
+                        <table class="table table-bordered nowrap" id="table-pendaftaran" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>ID Pendaftaran</th>
+                                    <th>ID Tim</th>
+                                    <th>Nama Peserta/Ketua</th>
+                                    <th>Event</th>
+                                    <th>Sudah Tervalidasi</th>
+                                    <th>Status Pendaftar</th>
+                                    <th>Tahapan</th>
+                                    <th>Tahapan Terakhir</th>
+                                    <th>Tanggal</th>
+                                    <th class="table-plus datatable-nosort">Action</th>
                                 </tr>
-                            @else
-                                <tr id="tr_{{$regis->id_event_eksternal_registration}}">
-                                    <td width="5%">{{$regis->id_event_eksternal_registration}}</td>
-                                    <td>{{$regis->tim_event_id}}</td>
-                                    <td>
-                                        @foreach ($regis->tim_ref->tim_detail_ref as $detail)
-                                            @if ($detail->role == "ketua")
-                                                @if ($detail->nim)
-                                                    @if ($detail->mahasiswa_ref|| $regis->mahasiswa_ref->count() > 0)
-                                                        {{$detail->mahasiswa_ref->mahasiswa_nama}}
+                            </thead>
+                            <tbody>
+                                @foreach ($registrations as $regis)
+                                    @if ($regis->event_eksternal_ref->role == "Individu")
+                                        <tr id="tr_{{$regis->id_event_eksternal_registration}}">
+                                            <td width="5%">{{$regis->id_event_eksternal_registration}}</td>
+                                            <td></td>
+                                            <td>
+                                                @if ($regis->nim)
+                                                    @if ($regis->mahasiswa_ref || $regis->mahasiswa_ref->count() > 0)
+                                                        {{$regis->mahasiswa_ref->mahasiswa_nama}}
                                                     @else
-                                                        {{$detail->nim}}
+                                                        {{$regis->nim}}
                                                     @endif
                                                 @endif
-                                            @endif
-                                        @endforeach    
-                                    </td>
-                                    <td>{{$regis->event_eksternal_ref->nama_event}}</td>
-                                    <td>
-                                        @if ($regis->status == "0")
-                                            <a href="#" class="btn btn-warning" style="font-size: 12px">Belum</a>
-                                        @else
-                                            <a href="#" class="btn btn-success" style="font-size: 12px">Sudah</a> 
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @foreach ($regis->tim_ref->tim_detail_ref as $detail)
-                                            @if ($detail->role == "ketua")
-                                                @if ($detail->nim)
-                                                    Mahasiswa Polindra
-                                                @endif
-                                            @endif
-                                        @endforeach  
-                                    </td>
-                                    <td>
-                                        @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
-                                            <i class="fas fa-fire text-danger font-weight-bold"></i>
-                                        @endforeach
-                                    </td>
-                                    <td>
-                                        {{$regis->tahapan_regis_ref[0]->tahapan_event_eksternal->nama_tahapan}}
-                                    </td>
-                                    <td>{{ date("d/m/Y", strtotime($regis->created_at)) }}</td>
-                                    <td>
-                                        @php
-                                            $tim_detail_json = json_encode($regis->tim_ref->tim_detail_ref);
-                                        @endphp
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                Action
-                                            </button>
-                                            <div class="dropdown-menu dropdown-action">
-                                                <a class="dropdown-item dropdown-action-item" onclick="detailTim({{$tim_detail_json}})" href="#"><i class="fas fa-eye mr-2"></i>Detail Tim</a>
-                                                @if ($regis->status == "1")
-                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_eksternal_registration}}, '0')" href="#"><i class="fas fa-ban mr-2"></i>Buat Tidak Tervalidasi</a>
+                                            </td>
+                                            <td>{{$regis->event_eksternal_ref->nama_event}}</td>
+                                            <td></td>
+                                            <td>
+                                                @if ($regis->status == "0")
+                                                    <a href="#" class="btn btn-warning" style="font-size: 12px">Belum</a> 
                                                 @else
-                                                    <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_eksternal_registration}}, '1')" href="#"><i class="fas fa-check-circle-2"></i>Buat Tervalidasi</a>
+                                                    <a href="#" class="btn btn-success" style="font-size: 12px">Sudah</a>
                                                 @endif
-                                                <a class="dropdown-item dropdown-action-item" href="{{route('tahapan.eventeksternal.pendaftaran.save',['eventid'=>$regis->event_eksternal_id,'regisid'=>$regis->id_event_eksternal_registration])}}"><i class="fas fa-fire mr-2"></i>Ke Tahap Selanjutnya</a>
-                                                <a class="dropdown-item dropdown-action-item" onclick="deleteTim({{$regis->id_event_eksternal_registration}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endif
-                        @endforeach
-                    </tbody>
-                </table>
+                                            </td>
+                                            <td>
+                                                Mahasiswa Polindra
+                                            </td>
+                                            <td>
+                                                @if ($regis->tahapan_regis_ref->count() > 0)
+                                                    @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
+                                                    <i class="fas fa-fire text-danger font-weight-bold"></i>
+                                                    @endforeach
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($regis->tahapan_regis_ref->count() > 0)
+                                                    {{$regis->tahapan_regis_ref[0]->tahapan_event_eksternal->nama_tahapan}}
+                                                @endif
+                                            </td>
+                                            <td>{{ date("d/m/Y", strtotime($regis->created_at)) }}</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Action
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-action">
+                                                        @if ($regis->status == "1")
+                                                            <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_eksternal_registration}}, '0')" href="#"><i class="fas fa-ban mr-2"></i>Buat Tidak Tervalidasi</a>
+                                                        @else
+                                                            <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_eksternal_registration}}, '1')" href="#"><i class="fas fa-check-circle-2"></i>Buat Tervalidasi</a>
+                                                        @endif
+                                                        <a class="dropdown-item dropdown-action-item" href="{{route('tahapan.eventeksternal.pendaftaran.save',['eventid'=>$regis->event_eksternal_id,'regisid'=>$regis->id_event_eksternal_registration])}}"><i class="fas fa-fire mr-2"></i>Ke Tahap Selanjutnya</a>
+                                                        <a class="dropdown-item dropdown-action-item" onclick="deleteTim({{$regis->id_event_eksternal_registration}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @else
+                                        <tr id="tr_{{$regis->id_event_eksternal_registration}}">
+                                            <td width="5%">{{$regis->id_event_eksternal_registration}}</td>
+                                            <td>{{$regis->tim_event_id}}</td>
+                                            <td>
+                                                @foreach ($regis->tim_ref->tim_detail_ref as $detail)
+                                                    @if ($detail->role == "ketua")
+                                                        @if ($detail->nim)
+                                                            @if ($detail->mahasiswa_ref|| $regis->mahasiswa_ref->count() > 0)
+                                                                {{$detail->mahasiswa_ref->mahasiswa_nama}}
+                                                            @else
+                                                                {{$detail->nim}}
+                                                            @endif
+                                                        @endif
+                                                    @endif
+                                                @endforeach    
+                                            </td>
+                                            <td>{{$regis->event_eksternal_ref->nama_event}}</td>
+                                            <td>
+                                                @if ($regis->status == "0")
+                                                    <a href="#" class="btn btn-warning" style="font-size: 12px">Belum</a>
+                                                @else
+                                                    <a href="#" class="btn btn-success" style="font-size: 12px">Sudah</a> 
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @foreach ($regis->tim_ref->tim_detail_ref as $detail)
+                                                    @if ($detail->role == "ketua")
+                                                        @if ($detail->nim)
+                                                            Mahasiswa Polindra
+                                                        @endif
+                                                    @endif
+                                                @endforeach  
+                                            </td>
+                                            <td>
+                                                @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
+                                                    <i class="fas fa-fire text-danger font-weight-bold"></i>
+                                                @endforeach
+                                            </td>
+                                            <td>
+                                                {{$regis->tahapan_regis_ref[0]->tahapan_event_eksternal->nama_tahapan}}
+                                            </td>
+                                            <td>{{ date("d/m/Y", strtotime($regis->created_at)) }}</td>
+                                            <td>
+                                                @php
+                                                    $tim_detail_json = json_encode($regis->tim_ref->tim_detail_ref);
+                                                @endphp
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Action
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-action">
+                                                        <a class="dropdown-item dropdown-action-item" onclick="detailTim({{$tim_detail_json}})" href="#"><i class="fas fa-eye mr-2"></i>Detail Tim</a>
+                                                        @if ($regis->status == "1")
+                                                            <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_eksternal_registration}}, '0')" href="#"><i class="fas fa-ban mr-2"></i>Buat Tidak Tervalidasi</a>
+                                                        @else
+                                                            <a class="dropdown-item dropdown-action-item"  onclick="updateStatus({{$regis->id_event_eksternal_registration}}, '1')" href="#"><i class="fas fa-check-circle-2"></i>Buat Tervalidasi</a>
+                                                        @endif
+                                                        <a class="dropdown-item dropdown-action-item" href="{{route('tahapan.eventeksternal.pendaftaran.save',['eventid'=>$regis->event_eksternal_id,'regisid'=>$regis->id_event_eksternal_registration])}}"><i class="fas fa-fire mr-2"></i>Ke Tahap Selanjutnya</a>
+                                                        <a class="dropdown-item dropdown-action-item" onclick="deleteTim({{$regis->id_event_eksternal_registration}})" href="#"><i class="fas fa-trash-alt mr-2"></i>Hapus</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="sertifikat" role="tabpanel" aria-labelledby="sertifikat-tab">
+                        @if ($event->role == "Individu")
+                            <div class="table-responsive">
+                                <table class="table table-bordered nowrap" id="table-pendaftaran" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th>ID Pendaftaran</th>
+                                            <th>Nama</th>
+                                            <th>Status Upload</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($registrations as $regis)
+                                            @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
+                                                @if ($tahapan_regis->tahapan_event_eksternal->nama_tahapan == "Upload Sertifikat")
+                                                    <tr id="tr_{{$regis->id_event_eksternal_registration}}">
+                                                        <td width="5%">{{$regis->id_event_eksternal_registration}}</td>
+                                                        <td>
+                                                            @if ($regis->nim)
+                                                                @if ($regis->mahasiswa_ref)
+                                                                    {{$regis->mahasiswa_ref->mahasiswa_nama}}
+                                                                @else
+                                                                    {{$regis->nim}}
+                                                                @endif
+                                                            @else
+                                                                {{$regis->participant_ref->nama_participant}}
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if ($regis->sertifikat_ref)
+                                                                <i class="far fa-check-circle text-primary"></i>
+                                                            @else
+                                                                <i class="fas fa-ban text-danger"></i>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group">
+                                                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    Action
+                                                                </button>
+                                                                @if ($regis->sertifikat_ref)
+                                                                    <div class="dropdown-menu dropdown-action">
+                                                                        <a class="dropdown-item dropdown-action-item" href="{{route('registrations.eventeksternal.sertificate.download',['sertificateid'=>$regis->sertifikat_ref->id_sertif_eksternal])}}"><i class="fas fa-cloud-download-alt mr-2"></i>Download</a>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="table-responsive">
+                                <table class="table table-bordered nowrap" id="table-pendaftaran" style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th>ID Pendaftaran</th>
+                                            <th>ID Tim</th>
+                                            <th>Nama Peserta/Ketua</th>
+                                            <th>Status Upload</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($registrations as $regis)
+                                            @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
+                                                @if ($tahapan_regis->tahapan_event_eksternal->nama_tahapan == "Upload Sertifikat")
+                                                    <tr id="tr_{{$regis->id_event_eksternal_registration}}">
+                                                        <td width="5%">{{$regis->id_event_eksternal_registration}}</td>
+                                                        <td>{{$regis->tim_event_id}}</td>
+                                                        <td>
+                                                            @foreach ($regis->tim_ref->tim_detail_ref as $detail)
+                                                                @if ($detail->role == "ketua")
+                                                                    @if ($detail->nim)
+                                                                        @if ($detail->mahasiswa_ref)
+                                                                            {{$detail->mahasiswa_ref->mahasiswa_nama}}
+                                                                        @else
+                                                                            {{$detail->nim}}
+                                                                        @endif
+                                                                    @else
+                                                                        {{$detail->participant_ref->nama_participant}}
+                                                                    @endif
+                                                                @endif
+                                                            @endforeach    
+                                                        </td>
+                                                        <td>
+                                                            @if ($regis->sertifikat_ref)
+                                                                <i class="far fa-check-circle text-primary"></i>
+                                                            @else
+                                                                <i class="fas fa-ban text-danger"></i>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group">
+                                                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    Action
+                                                                </button>
+                                                                @if ($regis->sertifikat_ref)
+                                                                    <div class="dropdown-menu dropdown-action">
+                                                                        <a class="dropdown-item dropdown-action-item" href="{{route('registrations.eventeksternal.sertificate.download',['sertificateid'=>$regis->sertifikat_ref->id_sertif_eksternal])}}"><i class="fas fa-cloud-download-alt mr-2"></i>Download</a>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
     </div>

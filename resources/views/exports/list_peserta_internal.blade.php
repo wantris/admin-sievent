@@ -9,6 +9,11 @@
                 <th>Status Pendaftar</th>
                 <th>Status Validasi</th>
                 <th>Tahapan</th>
+                @foreach ($event->tahapanRef as $checkTahapan)
+                    @if ($checkTahapan->nama_tahapan == "Upload Sertifikat")
+                        <th>Sertifikat</th>
+                    @endif
+                @endforeach
             </tr>
         </thead>
         <tbody>
@@ -56,9 +61,16 @@
                     </td>
                     <td>
                         @if ($regis->tahapan_regis_ref->count() > 0)
-                            {{$regis->tahapan_regis_ref[0]->tahapanEventInternal->nama_tahapan}}
+                            {{$regis->tahapan_regis_ref[0]->tahapan_event_internal->nama_tahapan}}
                         @endif
                     </td>
+                    @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
+                        @if ($tahapan_regis->tahapan_event_internal->nama_tahapan == "Upload Sertifikat")
+                            @if ($regis->sertifikat_ref)
+                                <td rowspan="{{$tahapan_count}}">{{env('BACKEND_URL')."eventinternal/sertificate/". $regis->sertifikat_ref->filename}}</td>
+                            @endif
+                        @endif
+                    @endforeach
                 </tr>
                 @for($i=1;$i<$tahapan_count;$i++)
                     <tr>
@@ -85,6 +97,11 @@
                 <th>Nomor Telepon</th>
                 <th>Status Validasi</th>
                 <th>Tahapan</th>
+                @foreach ($event->tahapanRef as $checkTahapan)
+                    @if ($checkTahapan->nama_tahapan == "Upload Sertifikat")
+                        <th>Sertifikat</th>
+                    @endif
+                @endforeach
             </tr>
         </thead>
         <tbody>
@@ -156,6 +173,13 @@
                             {{$regis->tahapan_regis_ref[0]->tahapan_event_internal->nama_tahapan}}
                         @endif
                     </td>
+                    @foreach ($regis->tahapan_regis_ref as $tahapan_regis)
+                        @if ($tahapan_regis->tahapan_event_internal->nama_tahapan == "Upload Sertifikat")
+                            @if ($regis->sertifikat_ref)
+                                <td rowspan="{{$total_count}}">{{env('BACKEND_URL')."eventinternal/sertificate/". $regis->sertifikat_ref->filename}}</td>
+                            @endif
+                        @endif
+                    @endforeach
                 </tr>
                 @for($i=1;$i<$total_count;$i++)
                     <tr>

@@ -9,6 +9,7 @@ use GuzzleHttp\Client;
 use App\EventInternalRegistration;
 use App\Exports\ListPesertaExport;
 use Maatwebsite\Excel\Facades\Excel;
+use GuzzleHttp\Exception\ClientException;
 use PDF;
 
 class EventInternalRegisController extends Controller
@@ -29,7 +30,8 @@ class EventInternalRegisController extends Controller
 
     public function getByEvent($id_eventinternal)
     {
-        $event = EventInternal::select('nama_event', 'id_event_internal')->first();
+        $event = EventInternal::with('tahapanRef')->select('nama_event', 'id_event_internal', 'role')->find($id_eventinternal);
+
         if ($event) {
             $title = "Pendaftaran Event";
             $headerTitle = "Data Pendaftaran Event " . $event->nama_event;
@@ -120,7 +122,7 @@ class EventInternalRegisController extends Controller
 
     public function exportExcel($id_eventinternal)
     {
-        $event = EventInternal::find($id_eventinternal);
+        $event = EventInternal::with('tahapanRef')->find($id_eventinternal);
         if ($event) {
             return Excel::download(new ListPesertaExport($id_eventinternal), 'Peserta ' . $event->nama_event . '.xlsx');
         }
@@ -156,6 +158,31 @@ class EventInternalRegisController extends Controller
             $body = json_decode($responseP->getBody());
 
             return $body->data;
+        } catch (ClientException $exception) {
+            $response = $exception->getResponse();
+            $responseBodyAsString = json_decode($response->getBody());
+            return redirect()->back()->with('failed', $responseBodyAsString->message);
+        }
+    }
+
+    public function downloadSertificate()
+    {
+        $sertificateid = request()->sertificateid;
+        try {
+            $client = new Client();
+            $urlP = env('BACKEND_URL') . "registration/eventinternal/sertificate";
+
+            $responseP = $client->request('GET', $urlP, [
+                'verify'  => false,
+                'query' => [
+                    'sertificateid' => $sertificateid,
+                ]
+            ]);
+
+            $body = json_decode($responseP->getBody());
+            $sertif = $body->data;
+
+            return redirect($sertif->file_url);
         } catch (ClientException $exception) {
             $response = $exception->getResponse();
             $responseBodyAsString = json_decode($response->getBody());

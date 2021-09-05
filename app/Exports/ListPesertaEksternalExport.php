@@ -22,8 +22,9 @@ class ListPesertaEksternalExport implements FromView, ShouldAutoSize
     public function view(): View
     {
 
-        $event = EventEksternal::select('nama_event')->find($this->id_eventeksternal);
+        $event = EventEksternal::with('tahapanRef')->select('nama_event', 'id_event_eksternal', 'role')->find($this->id_eventeksternal);
         $data = $this->getData();
+        // dd($data);
 
         return view('exports.list_peserta_eksternal', [
             'pendaftaran' => $data,

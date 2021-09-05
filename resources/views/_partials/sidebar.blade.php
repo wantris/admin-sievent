@@ -66,6 +66,13 @@
           <li><a class="nav-link" href="{{route('registrations.eventeksternal.index')}}">Event Eksternal</a></li>
         </ul>
       </li>
+      <li class="nav-item dropdown">
+        <a href="#" class="nav-link has-dropdown"><i class="fas fa-trophy"></i><span>Prestasi</span></a>
+        <ul class="dropdown-menu">
+          <li><a class="nav-link" href="{{route('prestasi.eventinternal.index')}}">Event Internal</a></li>
+          <li><a class="nav-link" href="{{route('prestasi.eventeksternal.index')}}">Event Eksternal</a></li>
+        </ul>
+      </li>
       @if (Session::get('is_admin') == "1")
       <li class="menu-header">Pengaturan Website</li>
       <li><a class="nav-link" href="{{route('slider.index')}}"><i class="fas fa-sliders-h"></i><span>Slider</span></a></li>
